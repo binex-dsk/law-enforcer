@@ -1,3 +1,14 @@
+name = 'kick'
+long = 'Kick a user from the server.'
+short = "Kick a user"
+syntax = "(user) (reason || none)"
+ex1 = "id1 don't do that again"
+ex2 = "id2"
+notes = f"The user is DMed upon being kicked. Additionally, they are given a one-time invite to rejoin with."
+f"\nIn later versions, there will be options to disable this."
+reqperms = "`kick members`\n`create instant invite`"
+no_docs = False
+
 async def run(**kwargs):
     g = kwargs['g']
     c = kwargs['c']

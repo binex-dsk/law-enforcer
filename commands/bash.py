@@ -1,5 +1,6 @@
 import os
 
+no_docs = True
 async def run(**kwargs):
     c = kwargs['c']
     if not kwargs['m'].id in kwargs['ids']:

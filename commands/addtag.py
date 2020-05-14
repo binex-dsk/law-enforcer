@@ -1,5 +1,15 @@
 from datetime import datetime
 
+name = 'addtag'
+long = 'Add a tag to the server.'
+short = long
+syntax = "(tag name)"
+ex1 = "example Some tag"
+ex2 = "test Test tag"
+notes = "Access tags with the `tag` command, or their info with the `taginfo` command."
+reqperms = "`manage guild`"
+no_docs = False
+
 async def run(**kwargs):
     g = kwargs['g']
     c = kwargs['c']
@@ -19,6 +29,7 @@ async def run(**kwargs):
     tagcont = " ".join(args[1:len(args)])
     now = datetime.now()
     try:
+        # basically, this code just adds the tag to a SQL table
         conn.execute(tags.insert(), [
             {'name': tagname, 'content': tagcont, 'creatortag': str(m), 
             'creatorid': m.id, 'createdat': f"{now.month}/{now.day}/{now.year}, at {now.hour}:{now.minute}",

@@ -1,3 +1,13 @@
+name = 'removetag'
+long = 'Remove a tag from the server.'
+short = long
+syntax = "(tag name)"
+ex1 = "example"
+ex2 = "test"
+notes = False
+reqperms = "`manage guild`"
+no_docs = False
+
 async def run(**kwargs):
     g = kwargs['g']
     c = kwargs['c']
@@ -20,6 +30,7 @@ async def run(**kwargs):
         await c.send(f"That tag does not exist in this server.")
         return print(e)
     try:
+        # similar to addtag, but removes it
         d = tags.delete().where(tags.c.name==tagname).where(tags.c.guild==g.id)
         result = conn.execute(d)
         return await c.send(f"Successfully deleted tag {tagname}.")

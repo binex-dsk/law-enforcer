@@ -1,19 +1,37 @@
 # Another init file.
-from . import addtag, ban, bash, clear, eval, help, info, kick, mute, ping, removetag, restart, tag, taginfo, unban, unmute
+from . import addtag, ban, bash, clear, eval, help, info, kick, mute, ping, removetag, restart, tag, taginfo, tags, unban, unmute
 
-addtagC = addtag.run
-banC = ban.run
-bashC = bash.run
-clearC = clear.run
-evalC = eval.run
-helpC = help.run
-infoC = info.run
-kickC = kick.run
-muteC = mute.run
-pingC = ping.run
-removetagC = removetag.run
-restartC = restart.run
-tagC = tag.run
-taginfoC = taginfo.run
-unbanC = unban.run
-unmuteC = unmute.run
+# this is only here for sorting
+pingC = ping
+
+banC = ban
+
+unbanC = unban
+
+kickC = kick
+
+muteC = mute
+
+unmuteC = unmute
+
+clearC = clear
+
+addtagC = addtag
+
+removetagC = removetag
+
+tagC = tag
+
+taginfoC = taginfo
+
+tagsC = tags
+
+bashC = bash
+
+evalC = eval
+
+helpC = help
+
+infoC = info
+
+restartC = restart

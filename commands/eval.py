@@ -1,5 +1,7 @@
 import discord, ast, math, random
 
+no_docs = True
+
 def insert_returns(body):
     # insert return stmt if the last expression is a expression statement
     if isinstance(body[-1], ast.Expr):
@@ -51,7 +53,8 @@ async def run(**kwargs):
             'discord': discord,
             'math': math,
             'client': kwargs['client'],
-            'message': kwargs['msg']
+            'message': kwargs['msg'],
+            'kwargs': kwargs
         }
         # eval the code
         exec(compile(parsed, filename="<ast>", mode="exec"), env)

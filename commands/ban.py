@@ -1,3 +1,13 @@
+name = 'ban'
+long = 'Ban a user from the server.'
+short = "Ban a user"
+syntax = "(user) (reason || none)"
+ex1 = "id1 dumb stupid"
+ex2 = "id2"
+notes = "The user is DMed upon being banned."
+reqperms = "`ban members`"
+no_docs = False
+
 async def run(**kwargs):
     c = kwargs['c']
     m = kwargs['m']

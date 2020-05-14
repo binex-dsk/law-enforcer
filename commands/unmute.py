@@ -1,3 +1,13 @@
+name = 'unmute'
+long = 'Unmuted a muted user.'
+short = "Unmute a user"
+syntax = "(user) (reason || none)"
+ex1 = "id1 said sorry in dms"
+ex2 = "id2"
+notes = "The user is DMed when unmuted."
+reqperms = "`mute members`\n`kick members`"
+no_docs = False
+
 async def run(**kwargs):
     g = kwargs['g']
     c = kwargs['c']

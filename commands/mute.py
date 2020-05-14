@@ -1,5 +1,15 @@
 import math, asyncio
 
+name = 'mute'
+long = 'Mute a user for a certain amount of time'
+short = "Mute a user"
+syntax = "(user) (time) (reason || none)"
+ex1 = "id1 24 stop spamming"
+ex2 = "id2 0.5"
+notes = "The user is DMed when they are muted, as well as automatically unmuted."
+reqperms = "`mute members`\n`kick members`"
+no_docs = False
+
 async def unmute(m, t, r, role):
     await asyncio.sleep(t*60*60)
     if not role in m.roles:

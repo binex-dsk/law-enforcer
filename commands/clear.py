@@ -1,3 +1,13 @@
+name = 'clear'
+long = 'Clear a certain amount of messages.'
+short = "Clear messages"
+syntax = "(amount || 20)"
+ex1 = "40"
+ex2 = " "
+notes = "The limit for this is very high (10000), but higher values (>2000) will be slower."
+reqperms = "`manaage messages`\n`read message history`"
+no_docs = False
+
 async def run(**kwargs):
     g = kwargs['g']
     c = kwargs['c']

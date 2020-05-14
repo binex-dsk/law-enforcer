@@ -64,12 +64,11 @@ async def on_message(msg):
             if role.name.lower() == "muted":
                 muted_role = role
                 break
-    pt = os.path.dirname(os.path.abspath(__file__))
-    commandfiles = [f for f in os.listdir(f"{pt}/commands") if os.path.isfile(os.path.join(f"{pt}/commands", f))]
-    if not f"{cmd}.py" in commandfiles or cmd == "__init__":
+        
+    command = commands.get(cmd + "C")
+    if not command:
         return
-    run = commands.get(cmd + "C")
-    await run(args=args, msg=msg, client=client, g=g, c=c, m=m, botlower=botlower,
+    await command.run(args=args, msg=msg, client=client, g=g, c=c, m=m, botlower=botlower,
     userlower=userlower, botperms=botperms, userperms=userperms, owneronly=owneronly, ids=ids, 
     helpCmd=helpCmd, oauth=oauth, startTime=startTime, staticinfo=staticinfo, endinfo=endinfo, 
     muted_role=muted_role, conn=conn, tags=tags, prefix=prefix)

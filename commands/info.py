@@ -1,5 +1,6 @@
 from datetime import datetime
 
+no_docs = True
 async def run(**kwargs):
     # staticinfo and endinfo are used to shorten this a bit, see constants
     # the uptime is just the current total of seconds it's been up

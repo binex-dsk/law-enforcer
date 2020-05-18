@@ -8,4 +8,4 @@ def helpCmd(emb, cmd, desc, syntax, ex1, ex2, notes, reqperms):
         emb.add_field(name="Examples", value=f"\\{prefix}{cmd} {ex1}\n\\{prefix}{cmd} {ex2}", inline=False)
     if notes: 
         emb.add_field(name="Extra Notes", value=notes)
-    return emb.add_field(name="Required Permissions", value=reqperms)
+    return emb.add_field(name="Required Permissions", value=reqperms.upper().replace(" ", "_"))

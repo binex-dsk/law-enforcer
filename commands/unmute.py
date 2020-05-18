@@ -1,6 +1,5 @@
 name = 'unmute'
 long = 'Unmuted a muted user.'
-short = "Unmute a user"
 syntax = "(user) (reason || none)"
 ex1 = "id1 said sorry in dms"
 ex2 = "id2"

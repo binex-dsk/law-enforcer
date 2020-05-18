@@ -64,8 +64,7 @@ async def on_message(msg):
             if role.name.lower() == "muted":
                 muted_role = role
                 break
-        
-    command = commands.get(cmd + "C")
+    command = commands.get(cmd)
     if not command:
         return
     await command.run(args=args, msg=msg, client=client, g=g, c=c, m=m, botlower=botlower,

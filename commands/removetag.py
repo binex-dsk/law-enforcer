@@ -1,6 +1,5 @@
 name = 'removetag'
 long = 'Remove a tag from the server.'
-short = long
 syntax = "(tag name)"
 ex1 = "example"
 ex2 = "test"

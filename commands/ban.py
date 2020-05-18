@@ -1,6 +1,5 @@
 name = 'ban'
 long = 'Ban a user from the server.'
-short = "Ban a user"
 syntax = "(user) (reason || none)"
 ex1 = "id1 dumb stupid"
 ex2 = "id2"

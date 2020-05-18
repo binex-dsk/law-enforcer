@@ -1,6 +1,5 @@
 name = 'clear'
 long = 'Clear a certain amount of messages.'
-short = "Clear messages"
 syntax = "(amount || 20)"
 ex1 = "40"
 ex2 = " "

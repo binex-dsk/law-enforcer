@@ -1,15 +1,15 @@
-import discord, random
-from commands import __dict__ as commands
-
+import discord, random, sys
+from . import __dict__ as commands
+from groups import __dict__ as groups
 no_docs = True
 
 async def run(**kwargs):
     args = kwargs['args']
     c = kwargs['c']
     helpCmd = kwargs['helpCmd']
+    ids = kwargs['ids']
     # initialize an embed
     helpEmb = discord.Embed()
-    ids = kwargs['ids']
     # get 2 random ids from the owners
     id1 = f"<@{ids[random.randint(0, 1)]}>"
     id2 = f"<@{ids[random.randint(0, 1)]}>"
@@ -21,16 +21,21 @@ async def run(**kwargs):
     if not len(args) > 0:
         helpEmb.set_author(name="Invite me here!", url=kwargs['oauth'], icon_url=kwargs['client'].user.avatar_url)
         helpEmb.title = "All commands"
-        helpEmb.description = "Here is a list of all commands I have."
-        # the 2 lines below just filter out the commands and stuff
-        cmdlist = list(filter(lambda x: (type(x) == type(discord) and not x.no_docs), commands.values()))
-        for command in cmdlist[int(len(cmdlist)/2):len(cmdlist)-1]:
-            helpEmb.add_field(name=command.name, value=command.short, inline=False)
+        helpEmb.description = "This is a list of all groups and their commands."
+        for group in list(filter(lambda x: (type(x) == type(discord)), groups.values())):
+            # i could do this way better but im too lazy
+            helpEmb.add_field(name=group.name, value=f"{group.description}\n`{'`, `'.join(group.commands)}`", inline=False)
         helpEmb.set_footer(text="Law Enforcer v0.7", icon_url=kwargs['client'].user.avatar_url)
-
-    elif cmd and not cmd.no_docs:
+    elif cmd:
+        if cmd.no_docs:
+            return await c.send("The command you entered exists but lacks documentation. If you believe this is in error, contact an owner.")
+        ex1 = cmd.ex1
+        ex2 = cmd.ex2
+        if type(ex1) == str:
+            ex1 = ex1.replace("id1", id1)
+            ex2 = ex2.replace("id2", id2)
         helpEmb = helpCmd(helpEmb, cmd.name, cmd.long, cmd.syntax, 
-        cmd.ex1.replace("id1", id1), cmd.ex2.replace("id2", id2), cmd.notes, cmd.reqperms)
+        ex1, ex2, cmd.notes, cmd.reqperms)
     # no valid command? go here
     else:
         helpEmb.title = "Invalid command!"

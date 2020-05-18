@@ -2,12 +2,10 @@ import discord
 
 name = 'tags'
 long = 'Get a list of all tags in the server.'
-short = "List tags in the server"
 syntax = ""
 ex1 = False
 ex2 = False
-notes = f"Potentially, if you have enough tags, the bot won\'t be able to display them all. "
-f"However, the amount of tags required for this to happen is huge, so don't worry about it."
+notes = "Potentially, if you have enough tags, the bot won\'t be able to display them all. However, the amount of tags required for this to happen is huge, so don't worry about it."
 reqperms = "None"
 no_docs = False
 

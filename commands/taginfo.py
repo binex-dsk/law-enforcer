@@ -2,7 +2,6 @@ import discord
 
 name = 'taginfo'
 long = 'Get info on a tag in the server.'
-short = 'Access a tag in the server'
 syntax = "(tag name)"
 ex1 = "example"
 ex2 = "test"

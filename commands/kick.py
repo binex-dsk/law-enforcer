@@ -1,6 +1,5 @@
 name = 'kick'
 long = 'Kick a user from the server.'
-short = "Kick a user"
 syntax = "(user) (reason || none)"
 ex1 = "id1 don't do that again"
 ex2 = "id2"

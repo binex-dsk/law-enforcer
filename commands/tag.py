@@ -1,6 +1,5 @@
 name = 'tag'
 long = 'Access a tag in the server.'
-short = long
 syntax = "(tag name)"
 ex1 = "example"
 ex2 = "test"

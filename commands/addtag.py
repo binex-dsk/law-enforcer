@@ -2,7 +2,6 @@ from datetime import datetime
 
 name = 'addtag'
 long = 'Add a tag to the server.'
-short = long
 syntax = "(tag name)"
 ex1 = "example Some tag"
 ex2 = "test Test tag"

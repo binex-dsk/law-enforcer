@@ -2,7 +2,6 @@ import math, asyncio
 
 name = 'mute'
 long = 'Mute a user for a certain amount of time'
-short = "Mute a user"
 syntax = "(user) (time) (reason || none)"
 ex1 = "id1 24 stop spamming"
 ex2 = "id2 0.5"

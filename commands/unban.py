@@ -3,7 +3,6 @@ from constants import auth
 
 name = 'unban'
 long = 'Unban a banned user from the server.'
-short = "Unban a user"
 syntax = "(user ID) (reason || none)"
 ex1 = f"{auth.ids[random.randint(0, 1)]} not dumb stupid"
 ex2 = auth.ids[random.randint(0, 1)]

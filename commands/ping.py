@@ -2,7 +2,6 @@ from datetime import datetime
 
 name = 'ping'
 long = 'Get the current Client and API ping.'
-short = "Get the bot's ping."
 syntax = ""
 ex1 = False
 ex2 = False

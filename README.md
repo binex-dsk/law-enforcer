@@ -1,4 +1,4 @@
-# Law Enforcer: Main Branch
+# Law Enforcer: master Branch
 The repository for my currently WIP bot, Law Enforcer.
 
 Current version: 0.8

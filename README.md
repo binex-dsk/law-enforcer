@@ -1,7 +1,7 @@
-# Law Enforcer: Command Branch
-This branch is the experimental version of the main bot.
+# Law Enforcer: Main Branch
+The repository for my currently WIP bot, Law Enforcer.
 
-This uses dynamic, separate command files rather than just one big file. It runs faster, looks cooler, and is way easier to work on.
+Current version: 0.8
 
 Server: [invite](https://discord.gg/PVTBgK6)
 

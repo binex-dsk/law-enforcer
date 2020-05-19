@@ -1,7 +1,7 @@
 # Law Enforcer: Master Branch
 The repository for my currently WIP bot, Law Enforcer.
 
-Current version: 0.8
+Current version: 0.8.5
 
 Server: [invite](https://discord.gg/PVTBgK6)
 

@@ -17,7 +17,7 @@ async def run(**kwargs):
 
     cmd = None
     if len(args) > 0: 
-        cmd = commands.get(f"{args[0]}C")
+        cmd = commands.get(args[0])
     if not len(args) > 0:
         helpEmb.set_author(name="Invite me here!", url=kwargs['oauth'], icon_url=kwargs['client'].user.avatar_url)
         helpEmb.title = "All commands"
@@ -25,7 +25,7 @@ async def run(**kwargs):
         for group in list(filter(lambda x: (type(x) == type(discord)), groups.values())):
             # i could do this way better but im too lazy
             helpEmb.add_field(name=group.name, value=f"{group.description}\n`{'`, `'.join(group.commands)}`", inline=False)
-        helpEmb.set_footer(text="Law Enforcer v0.7", icon_url=kwargs['client'].user.avatar_url)
+        helpEmb.set_footer(text="Law Enforcer v0.8.1", icon_url=kwargs['client'].user.avatar_url)
     elif cmd:
         if cmd.no_docs:
             return await c.send("The command you entered exists but lacks documentation. If you believe this is in error, contact an owner.")

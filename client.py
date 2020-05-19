@@ -14,18 +14,23 @@ client = discord.Client()
 startTime = 0
 conn = None
 meta = None
-engine = None
+tagsEngine = None
 tags = None
+rolesConn = None
+rolesEngine = None
+muted_roles = None
 @client.event
 async def on_ready():
-    global startTime, conn, meta, engine, tags
+    global startTime, conn, meta, tagsEngine, tags, rolesConn, rolesEngine, muted_roles
     # used for uptime
     startTime = datetime.now()
     await client.change_presence(status=discord.Status.online, activity=discord.Game(game))
     print("Successfully logged in.")
-    engine = create_engine('sqlite:///tags.db')
+    tagsEngine = create_engine('sqlite:///tags.db')
+    rolesEngine = create_engine('sqlite:///roles.db')
     meta = MetaData()
-    conn = engine.connect()
+    conn = tagsEngine.connect()
+    rolesConn = rolesEngine.connect()
     tags = Table(
         'tags', meta,
         Column('name', String, primary_key=True),
@@ -35,7 +40,13 @@ async def on_ready():
         Column('createdat', String),
         Column('guild', Integer)
     )
-    meta.create_all(engine)
+    muted_roles = Table(
+        'muted_roles', meta,
+        Column('id', Integer),
+        Column('guild', Integer)
+    )
+    meta.create_all(tagsEngine)
+    meta.create_all(rolesEngine)
 
 
 @client.event
@@ -70,7 +81,7 @@ async def on_message(msg):
     await command.run(args=args, msg=msg, client=client, g=g, c=c, m=m, botlower=botlower,
     userlower=userlower, botperms=botperms, userperms=userperms, owneronly=owneronly, ids=ids, 
     helpCmd=helpCmd, oauth=oauth, startTime=startTime, staticinfo=staticinfo, endinfo=endinfo, 
-    muted_role=muted_role, conn=conn, tags=tags, prefix=prefix)
+    muted_role=muted_role, conn=conn, rolesconn=rolesConn,tags=tags, muted_roles=muted_roles, prefix=prefix)
     
 # tries to login with the token
 try:

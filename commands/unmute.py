@@ -1,3 +1,5 @@
+import discord
+
 name = 'unmute'
 long = 'Unmuted a muted user.'
 syntax = "(user) (reason || none)"
@@ -12,8 +14,8 @@ async def run(**kwargs):
     c = kwargs['c']
     m = kwargs['m']
     args = kwargs['args']
-    muted_role = kwargs['muted_role']
-
+    conn = kwargs['rolesconn']
+    roles = kwargs['muted_roles']
     if not g.me.guild_permissions.mute_members:
         return await c.send(kwargs['botperms']('mute members'))
     if not m.guild_permissions.mute_members:
@@ -22,6 +24,20 @@ async def run(**kwargs):
         return await c.send(kwargs['botperms']('kick members'))
     if not m.guild_permissions.kick_members:
         return await c.send(kwargs['userperms']('kick_members'))
+    s = roles.select().where(roles.c.guild==g.id)
+    role = False
+    muted_role = False
+    result = conn.execute(s)
+    try:
+        role = result.fetchone()
+    except:
+        return await c.send("No muted role is set! Please set one with `setmuted`.")
+    try:
+        muted_role = discord.utils.get(g.roles, id=role.id)
+    except Exception as e:
+        await c.send("No muted role is set! Please set one with `setmuted`.")
+        print(e)
+    # extra check
     if not muted_role:
         return await c.send("No muted role exists.")
     if g.me.top_role < muted_role:

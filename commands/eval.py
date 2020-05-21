@@ -20,8 +20,10 @@ def insert_returns(body):
 async def run(**kwargs):
     # makes sure the user is the owner, check constants
     c = kwargs['c']
-    if not kwargs['m'].id in kwargs['ids']:
-        return await c.send(kwargs['owneronly'])
+    checks = kwargs['checks']
+    check = await checks.owner(c, kwargs['m'])
+    if not check: return
+    
     if not len(kwargs['args']) > 0:
         return await c.send("You must include code to eval!")
     # the following code is modified from https://gist.github.com/nitros12/2c3c265813121492655bc95aa54da6b9. go check that one out

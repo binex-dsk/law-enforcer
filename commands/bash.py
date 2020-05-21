@@ -3,8 +3,10 @@ import os
 no_docs = True
 async def run(**kwargs):
     c = kwargs['c']
-    if not kwargs['m'].id in kwargs['ids']:
-        return await c.send(kwargs['owneronly'])
+    checks = kwargs['checks']
+    check = await checks.owner(c, kwargs['m'])
+    if not check: return
+
     if not len(kwargs['args']) > 0:
         return await c.send("You must include bash code to execute!")
     try:

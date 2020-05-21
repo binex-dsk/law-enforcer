@@ -3,8 +3,9 @@ import subprocess
 no_docs = True
 
 async def run(**kwargs):
-    if not kwargs['m'].id in kwargs['ids']:
-        return await kwargs['c'].send(kwargs['owneronly'])
+    checks = kwargs['checks']
+    check = await checks.owner(kwargs['c'], kwargs['m'])
+    if not check: return
     await kwargs['c'].send("Restarting...")
-    # runs the restart command, see constants
+
     exit()

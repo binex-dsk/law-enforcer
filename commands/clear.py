@@ -11,14 +11,10 @@ async def run(**kwargs):
     g = kwargs['g']
     c = kwargs['c']
     m = kwargs['m']
-    if not g.me.guild_permissions.manage_messages:
-        return await c.send(kwargs['botperms']('manage messages'))
-    if not m.guild_permissions.manage_messages:
-        return await c.send(kwargs['userperms']('manage_messages'))
-    if not g.me.guild_permissions.read_message_history:
-        return await c.send(kwargs['botperms']('read message history'))
-    if not m.guild_permissions.read_message_history:
-        return await c.send(kwargs['userperms']('read_message_history'))
+    checks = kwargs['checks']
+    check = await checks.perms(['manage_messages', 'read_message_history'], g, c, m)
+    if not check: return
+    
     if len(kwargs['args']) < 1:
         amt = 20
     else:

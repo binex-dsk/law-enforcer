@@ -14,24 +14,24 @@ async def run(**kwargs):
     args = kwargs['args']
     conn = kwargs['conn']
     tags = kwargs['tags']
-    if not g.me.guild_permissions.manage_guild:
-        return await c.send(kwargs['botperms']('manage the server'))
-    if not m.guild_permissions.manage_guild:
-        return await c.send(kwargs['userperms']('manage_guild'))
+    checks = kwargs['checks']
+    db = kwargs['db']
+
+    check = await checks.perms(['manage_guild'], g, c, m)
+    if not check: return
+    
     if len(args) < 1:
         return await c.send("Please provide a tag name.")
-    tagname = args[0]
-    s = tags.select().where(tags.c.name==tagname).where(tags.c.guild==g.id)
-    result = conn.execute(s)
+
+    result = db.fetch(tags, {'guild': g.id, 'name': args[0]}, conn)
+    if not result:
+        return await c.send(f"That tag does not exist in this server.")
+    await c.send("Are you SURE you want to remove this tag? Deleted tags are gone forever!\nType `y` to confirm or `n` to cancel.")
+    res = await kwargs['client'].wait_for('message', check=lambda ms: ms.author.id == m.id and ms.content in ['y', 'n'])
+    if res.content == 'n':
+        return await c.send("Command cancelled by user.")
     try:
-        result.fetchone()
-    except Exception as e:
-        await c.send(f"That tag does not exist in this server.")
-        return print(e)
-    try:
-        # similar to addtag, but removes it
-        d = tags.delete().where(tags.c.name==tagname).where(tags.c.guild==g.id)
-        result = conn.execute(d)
-        return await c.send(f"Successfully deleted tag {tagname}.")
+        db.delete(tags, {'guild': g.id, 'name': args[0]}, conn)
+        return await c.send(f"Successfully deleted tag {args[0]}.")
     except Exception as e:
         await c.send(f"Error while deleting tag:\n{e}")

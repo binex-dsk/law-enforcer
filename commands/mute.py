@@ -24,51 +24,46 @@ async def run(**kwargs):
     c = kwargs['c']
     m = kwargs['m']
     args = kwargs['args']
-    conn = kwargs['rolesconn']
+    conn = kwargs['conn']
     roles = kwargs['muted_roles']
-    if not g.me.guild_permissions.mute_members:
-        return await c.send(kwargs['botperms']('mute members'))
-    if not m.guild_permissions.mute_members:
-        return await c.send(kwargs['userperms']('mute_members'))
-    if not g.me.guild_permissions.kick_members:
-        return await c.send(kwargs['botperms']('kick members'))
-    if not m.guild_permissions.kick_members:
-        return await c.send(kwargs['userperms']('kick_members'))
+    checks = kwargs['checks']
+    db = kwargs['db']
+
+    check1 = await checks.perms(['mute_members', 'kick_members'], g, c, m)
+    if not check1: return
+    
     # checks the muted role
-    s = roles.select().where(roles.c.guild==g.id)
-    role = False
-    muted_role = False
-    result = conn.execute(s)
-    try:
-        role = result.fetchone()
-    except:
+    result = db.fetch(roles, {'guild': g.id}, conn)
+    if not result:
         return await c.send("No muted role is set! Please set one with `setmuted`.")
-    try:
-        muted_role = discord.utils.get(g.roles, id=role.id)
-    except Exception as e:
-        await c.send("No muted role is set! Please set one with `setmuted`.")
-        return print(e)
-    #e xtra check
-    if not muted_role:
-        return await c.send("No muted role exists. Please create one.")
+    role = result.fetchone()
+    muted_role = discord.utils.get(g.roles, id=role.id)
+
     if g.me.top_role < muted_role:
         return await c.send("I am at a lower level on the hierarchy than the muted role.")
     if not kwargs['msg'].mentions:
         return await c.send("Please mention a valid member.")
+
     mem = kwargs['msg'].mentions[0]
-    if g.me.top_role < mem.top_role:
-        return await c.send(kwargs['botlower'])
-    if m.top_role < mem.top_role:
-        return await c.send(kwargs['userlower'])
+
+    check2 = await checks.roles(m, mem, g, c)
+    if not check2: return
+
     # makes sure they aren't already muted
     if muted_role in mem.roles:
         return await c.send("That member is already muted.")
+
     if not len(args) > 1:
         return await c.send("Please provide an amount of time to mute this user for.")
+
     if math.isnan(float(args[1])):
         return await c.send("Please provide a valid number.")
+
     reason = " ".join(args[2:len(args)]) or "None"
     time = float(args[1])
+    # this checks if it's an integer number of hours, i.e. 5, to stop it from displaying 5.0, etc.
+    if float(int(time)) == time:
+        time = int(time)
     try:
         # add the muted role to the member
         await mem.add_roles(muted_role, reason=reason)

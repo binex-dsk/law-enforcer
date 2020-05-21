@@ -1,6 +1,7 @@
 import discord, random, sys
 from . import __dict__ as commands
 from groups import __dict__ as groups
+
 no_docs = True
 
 async def run(**kwargs):
@@ -25,7 +26,7 @@ async def run(**kwargs):
         for group in list(filter(lambda x: (type(x) == type(discord)), groups.values())):
             # i could do this way better but im too lazy
             helpEmb.add_field(name=group.name, value=f"{group.description}\n`{'`, `'.join(group.commands)}`", inline=False)
-        helpEmb.set_footer(text="Law Enforcer v0.8.5", icon_url=kwargs['client'].user.avatar_url)
+        helpEmb.set_footer(text="Law Enforcer v0.9", icon_url=kwargs['client'].user.avatar_url)
     elif cmd:
         if cmd.no_docs:
             return await c.send("The command you entered exists but lacks documentation. If you believe this is in error, contact an owner.")

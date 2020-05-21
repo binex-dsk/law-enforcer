@@ -4,8 +4,8 @@ from sqlalchemy import Table, Column, Integer, String, MetaData, create_engine
 
 from constants.auth import token, prefix, game, ids
 from constants.info import oauth, staticinfo, endinfo
-from constants.resp import botlower, userlower, owneronly, userperms, botperms
 from constants.help import helpCmd
+from constants import checks, db
 
 from commands import __dict__ as commands
 
@@ -14,23 +14,19 @@ client = discord.Client()
 startTime = 0
 conn = None
 meta = None
-tagsEngine = None
+engine = None
 tags = None
-rolesConn = None
-rolesEngine = None
 muted_roles = None
 @client.event
 async def on_ready():
-    global startTime, conn, meta, tagsEngine, tags, rolesConn, rolesEngine, muted_roles
+    global startTime, conn, meta, engine, tags, muted_roles
     # used for uptime
     startTime = datetime.now()
     await client.change_presence(status=discord.Status.online, activity=discord.Game(game))
     print("Successfully logged in.")
-    tagsEngine = create_engine('sqlite:///tags.db')
-    rolesEngine = create_engine('sqlite:///roles.db')
+    engine = create_engine('sqlite:///database.db')
     meta = MetaData()
-    conn = tagsEngine.connect()
-    rolesConn = rolesEngine.connect()
+    conn = engine.connect()
     tags = Table(
         'tags', meta,
         Column('name', String, primary_key=True),
@@ -45,8 +41,7 @@ async def on_ready():
         Column('id', Integer),
         Column('guild', Integer)
     )
-    meta.create_all(tagsEngine)
-    meta.create_all(rolesEngine)
+    meta.create_all(engine)
 
 
 @client.event
@@ -78,10 +73,9 @@ async def on_message(msg):
     command = commands.get(cmd)
     if not command:
         return
-    await command.run(args=args, msg=msg, client=client, g=g, c=c, m=m, botlower=botlower,
-    userlower=userlower, botperms=botperms, userperms=userperms, owneronly=owneronly, ids=ids, 
+    await command.run(args=args, msg=msg, client=client, g=g, c=c, m=m, checks=checks, 
     helpCmd=helpCmd, oauth=oauth, startTime=startTime, staticinfo=staticinfo, endinfo=endinfo, 
-    muted_role=muted_role, conn=conn, rolesconn=rolesConn,tags=tags, muted_roles=muted_roles, prefix=prefix)
+    conn=conn, tags=tags, muted_roles=muted_roles, db=db, prefix=prefix, ids=ids)
     
 # tries to login with the token
 try:

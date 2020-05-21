@@ -10,24 +10,20 @@ no_docs = False
 async def run(**kwargs):
     c = kwargs['c']
     m = kwargs['m']
-    if not kwargs['g'].me.guild_permissions.ban_members:
-        return await c.send(kwargs['botperms']('ban members'))
-    # checks user perms, see constants
-    if not m.guild_permissions.ban_members:
-        return await c.send(kwargs['userperms']('ban_members'))
+    checks = kwargs['checks']
+    check1 = await checks.perms(['ban_members'], kwargs['g'], c, m)
+    if not check1: return
     # checks for mentions
     if not kwargs['msg'].mentions:
         return await c.send("Please provide a member to ban.")
-    # uses the first mention
+
     member = kwargs['msg'].mentions[0]
-    # the reason, or "None"
+
+    check2 = await checks.roles(m, member, kwargs['g'], c)
+    if not check2: return
+
     reason = " ".join(kwargs['args'][1:len(kwargs['args'])]) or "None"
-    # checks role hierarchy, see constants
-    if kwargs['g'].me.top_role < member.top_role:
-        return await c.send(kwargs['botlower'])
-    if m.top_role < member.top_role:
-        return await c.send(kwargs['userlower'])
-    # try block
+
     try:
         # try to tell the member they've been banned
         try:

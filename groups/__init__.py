@@ -1,2 +1,2 @@
 # Yet another init file!
-from groups import moderation, tags, server_config, misc, bot_owners
+from groups import general, moderation, tags, server_config, misc, bot_owners

@@ -15,17 +15,16 @@ async def run(**kwargs):
     c = kwargs['c']
     m = kwargs['m']
     args = kwargs['args']
-    if not g.me.guild_permissions.ban_members:
-        return await c.send(kwargs['botperms']('ban members'))
-    if not m.guild_permissions.ban_members:
-        return await c.send(kwargs['userperms']('ban_members'))
-    # checks the length of the args
+    checks = kwargs['checks']
+
+    check = await checks.perms(['ban_members'], g, c, m)
+    if not check: return
+
     if len(args) < 1:
         return await c.send(f"Please enter a user ID to unban.\n"
         f"To get a user ID, enable **Developer Mode** in the **Appearance** tab in settings, then right-click the user and select **\"Copy ID.\"**")
-    # makes sure its a number
     if math.isnan(int(args[0])):
-        return await c.sned("Please enter a user ID to unban.")
+        return await c.send("Please enter a user ID to unban.")
     id = int(args[0])
     reason = " ".join(args[1:len(args)]) or "None"
     ban = None

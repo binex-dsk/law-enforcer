@@ -1,3 +1,5 @@
+from constants import checks, db
+
 name = 'removetag'
 long = 'Remove a tag from the server.'
 syntax = "(tag name)"
@@ -7,16 +9,15 @@ notes = False
 reqperms = "`manage guild`"
 no_docs = False
 
-async def run(**kwargs):
-    g = kwargs['g']
-    c = kwargs['c']
-    m = kwargs['m']
-    args = kwargs['args']
-    conn = kwargs['conn']
-    tags = kwargs['tags']
-    checks = kwargs['checks']
-    db = kwargs['db']
-
+async def run(env):
+    args = env['args']
+    client = env['client']
+    g = env['g']
+    c = env['c']
+    m = env['m']
+    conn = env['conn']
+    tags = env['tags']
+    
     check = await checks.perms(['manage_guild'], g, c, m)
     if not check: return
     
@@ -27,7 +28,7 @@ async def run(**kwargs):
     if not result:
         return await c.send(f"That tag does not exist in this server.")
     await c.send("Are you SURE you want to remove this tag? Deleted tags are gone forever!\nType `y` to confirm or `n` to cancel.")
-    res = await kwargs['client'].wait_for('message', check=lambda ms: ms.author.id == m.id and ms.content in ['y', 'n'])
+    res = await client.wait_for('message', check=lambda ms: ms.author.id == m.id and ms.content in ['y', 'n'])
     if res.content == 'n':
         return await c.send("Command cancelled by user.")
     try:

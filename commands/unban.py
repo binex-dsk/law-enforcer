@@ -1,21 +1,23 @@
 import math, random
-from constants import auth
+from constants.auth import ids
+from constants import checks
+
 
 name = 'unban'
 long = 'Unban a banned user from the server.'
 syntax = "(user ID) (reason || none)"
-ex1 = f"{auth.ids[random.randint(0, 1)]} not dumb stupid"
-ex2 = auth.ids[random.randint(0, 1)]
+ex1 = f"{ids[random.randint(0, 1)]} not dumb stupid"
+ex2 = ids[random.randint(0, 1)]
 notes = "The user is DMed upon being unbanned (if I can DM them)."
 reqperms = "`ban members`"
 no_docs = False
 
-async def run(**kwargs):
-    g = kwargs['g']
-    c = kwargs['c']
-    m = kwargs['m']
-    args = kwargs['args']
-    checks = kwargs['checks']
+async def run(env):
+    args = env['args']
+    client = env['client']
+    g = env['g']
+    c = env['c']
+    m = env['m']
 
     check = await checks.perms(['ban_members'], g, c, m)
     if not check: return
@@ -30,7 +32,7 @@ async def run(**kwargs):
     ban = None
     try:
         # fetch the ban for that user
-        user = kwargs['client'].get_user(id)
+        user = client.get_user(id)
         ban = await g.fetch_ban(user)
     except Exception as e:
         # fetch_ban throws an exception if the user isn't banned, so catch it here to notify the user

@@ -1,4 +1,5 @@
 import discord
+from constants import db
 
 name = 'taginfo'
 long = 'Get info on a tag in the server.'
@@ -9,22 +10,28 @@ notes = "Similarly to the `tag` command, tags are specific to servers. This comm
 reqperms = "None"
 no_docs = False
 
-async def run(**kwargs):
-    g = kwargs['g']
-    c = kwargs['c']
-    args = kwargs['args']
-    conn = kwargs['conn']
-    tags = kwargs['tags']
-    db = kwargs['db']
+async def run(env):
+    args = env['args']
+    g = env['g']
+    c = env['c']
+    conn = env['conn']
+    tags = env['tags']
+
     if len(args) < 1:
         return await c.send("Please provide a tag to search for.")
+
     tag = db.fetch(tags, {'name': args[0], 'guild': g.id}, conn)
+
     if not tag:
         return await c.send("That tag doesn't exist in this server.")
+
     tag = tag.fetchone()
     emb = discord.Embed()
+
     emb.title = f"Tag {tag.name}"
+
     emb.description = tag.content
-    emb.add_field(name="Created By", value=f"{tag.creatortag}\n{tag.creatorid}", inline=False)
-    emb.set_footer(text=tag.createdat, icon_url = kwargs['client'].user.avatar_url)
+
+    emb.add_field(name="Created By", value=f"{tag.creatortag}\n{tag.creatorid}", inline=False)\
+    .set_footer(text=tag.createdat, icon_url = client.user.avatar_url)
     await c.send(embed=emb)

@@ -1,4 +1,5 @@
 import discord
+from constants import db
 
 name = 'tags'
 long = 'Get a list of all tags in the server.'
@@ -10,12 +11,13 @@ for this to happen is huge, so don't worry about it."""
 reqperms = "None"
 no_docs = False
 
-async def run(**kwargs):
-    g = kwargs['g']
-    c = kwargs['c']
-    conn = kwargs['conn']
-    tags = kwargs['tags']
-    db = kwargs['db']
+async def run(env):
+    g = env['g']
+    c = env['c']
+    m = env['m']
+    conn = env['conn']
+    tags = env['tags']
+
     result = db.fetch(tags, {'guild': g.id}, conn)
     if not result:
         return await c.send("No tags exist on this server.")

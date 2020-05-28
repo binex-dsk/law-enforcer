@@ -1,4 +1,5 @@
 from datetime import datetime
+from constants import checks, db
 
 name = 'addtag'
 long = 'Add a tag to the server.'
@@ -9,15 +10,13 @@ notes = "Access tags with the `tag` command, or their info with the `taginfo` co
 reqperms = "`manage guild`"
 no_docs = False
 
-async def run(**kwargs):
-    g = kwargs['g']
-    c = kwargs['c']
-    m = kwargs['m']
-    args = kwargs['args']
-    conn = kwargs['conn']
-    tags = kwargs['tags']
-    db = kwargs['db']
-    checks = kwargs['checks']
+async def run(env):
+    args = env['args']
+    g = env['g']
+    c = env['c']
+    m = env['m']
+    conn = env['conn']
+    tags = env['tags']
     check = await checks.perms(['manage_guild'], g, c, m)
     if not check: return
     if len(args) < 1:

@@ -1,4 +1,5 @@
 import math, asyncio, discord
+from constants import checks, db
 
 name = 'mute'
 long = 'Mute a user for a certain amount of time'
@@ -19,15 +20,14 @@ async def unmute(m, t, r, role):
     except:
         pass
 
-async def run(**kwargs):
-    g = kwargs['g']
-    c = kwargs['c']
-    m = kwargs['m']
-    args = kwargs['args']
-    conn = kwargs['conn']
-    roles = kwargs['muted_roles']
-    checks = kwargs['checks']
-    db = kwargs['db']
+async def run(env):
+    args = env['args']
+    msg = env['msg']
+    g = env['g']
+    c = env['c']
+    m = env['m']
+    conn = env['conn']
+    roles = env['muted_roles']
 
     check1 = await checks.perms(['mute_members', 'kick_members'], g, c, m)
     if not check1: return
@@ -41,10 +41,10 @@ async def run(**kwargs):
 
     if g.me.top_role < muted_role:
         return await c.send("I am at a lower level on the hierarchy than the muted role.")
-    if not kwargs['msg'].mentions:
+    if not msg.mentions:
         return await c.send("Please mention a valid member.")
 
-    mem = kwargs['msg'].mentions[0]
+    mem = msg.mentions[0]
 
     check2 = await checks.roles(m, mem, g, c)
     if not check2: return

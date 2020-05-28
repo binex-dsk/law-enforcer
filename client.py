@@ -3,15 +3,14 @@ from datetime import datetime
 from sqlalchemy import Table, Column, Integer, String, MetaData, create_engine
 
 from constants.auth import token, prefix, game, ids
-from constants.info import oauth, staticinfo, endinfo
-from constants.help import helpCmd
+from constants.resp import info, helpCmd
 from constants import checks, db
 
 from commands import __dict__ as commands
 
 client = discord.Client()
 
-startTime = 0
+start_time = 0
 conn = None
 meta = None
 engine = None
@@ -19,9 +18,9 @@ tags = None
 muted_roles = None
 @client.event
 async def on_ready():
-    global startTime, conn, meta, engine, tags, muted_roles
+    global start_time, conn, meta, engine, tags, muted_roles
     # used for uptime
-    startTime = datetime.now()
+    start_time = datetime.now()
     await client.change_presence(status=discord.Status.online, activity=discord.Game(game))
     print("Successfully logged in.")
     engine = create_engine('sqlite:///database.db')
@@ -46,36 +45,48 @@ async def on_ready():
 
 @client.event
 async def on_message(msg):
-    # initialize muted role
-    muted_role = False
     # ignore bots
     if msg.author.bot:
         return
+
     # ignore messages not starting with our prefix
     if not msg.content.startswith(prefix):
         return
+
     # the actual arguments
     args = msg.content[len(prefix):len(msg.content)].strip().split(" ")
+
     # get the command
     cmd = args[0].lower()
     # remove the command from args
     args.pop(0)
+
     # used for shortening code
     c = msg.channel
     g = msg.guild
     m = msg.author
-    # grabs the guild muted role
-    if not muted_role: 
-        for role in g.roles:
-            if role.name.lower() == "muted":
-                muted_role = role
-                break
+
     command = commands.get(cmd)
     if not command:
         return
-    await command.run(args=args, msg=msg, client=client, g=g, c=c, m=m, checks=checks, 
-    helpCmd=helpCmd, oauth=oauth, startTime=startTime, staticinfo=staticinfo, endinfo=endinfo, 
-    conn=conn, tags=tags, muted_roles=muted_roles, db=db, prefix=prefix, ids=ids)
+    # environment to run commands
+    env = {
+        'args': args,
+        'msg': msg,
+        'client': client,
+        'g': g,
+        'c': c,
+        'm': m,
+        'start_time': start_time,
+        'conn': conn,
+        'tags': tags,
+        'muted_roles': muted_roles
+    }
+    try:
+        await command.run(env)
+    except Exception as e:
+        await c.send(f"Error during command execution:\n{e}\nPlease contact the owner with details of this error immediately.")
+        print(e)
     
 # tries to login with the token
 try:

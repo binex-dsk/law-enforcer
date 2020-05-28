@@ -1,4 +1,5 @@
 import discord, ast, math, random
+from constants import checks
 
 no_docs = True
 
@@ -17,20 +18,29 @@ def insert_returns(body):
     if isinstance(body[-1], ast.With):
         insert_returns(body[-1].body)
 
-async def run(**kwargs):
-    # makes sure the user is the owner, check constants
-    c = kwargs['c']
-    checks = kwargs['checks']
-    check = await checks.owner(c, kwargs['m'])
+async def run(env):
+    # the unused vars are for eval to be more dynamic
+    args = env['args']
+    msg = env['msg']
+    client = env['client']
+    g = env['g']
+    c = env['c']
+    m = env['m']
+    start_time = env['start_time']
+    conn = env['conn']
+    tags = env['tags']
+    muted_roles = env['muted_roles']
+
+    check = await checks.owner(c, m)
     if not check: return
     
-    if not len(kwargs['args']) > 0:
+    if not len(args) > 0:
         return await c.send("You must include code to eval!")
     # the following code is modified from https://gist.github.com/nitros12/2c3c265813121492655bc95aa54da6b9. go check that one out
     try:
         fn_name = "_eval_expr"
 
-        cmd = " ".join(kwargs['args']).strip("` ").replace("“", "\"").replace("”", "\"") # for mobile shit
+        cmd = " ".join(args).strip("` ").replace("“", "\"").replace("”", "\"") # for mobile shit
 
         emb = discord.Embed()
         emb.add_field(name="Eval", value=f"```py\n{cmd}```", inline=False)
@@ -46,18 +56,7 @@ async def run(**kwargs):
         body = parsed.body[0].body
 
         insert_returns(body)
-        # environment for execution
-        env = {
-            'm': kwargs['m'],
-            'g': kwargs['g'],
-            'msg': kwargs['msg'],
-            'c': c,
-            'discord': discord,
-            'math': math,
-            'client': kwargs['client'],
-            'message': kwargs['msg'],
-            'kwargs': kwargs
-        }
+
         # eval the code
         exec(compile(parsed, filename="<ast>", mode="exec"), env)
 

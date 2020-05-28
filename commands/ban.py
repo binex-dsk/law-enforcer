@@ -1,3 +1,5 @@
+from constants import checks
+
 name = 'ban'
 long = 'Ban a user from the server.'
 syntax = "(user) (reason || none)"
@@ -7,27 +9,30 @@ notes = "The user is DMed upon being banned."
 reqperms = "`ban members`"
 no_docs = False
 
-async def run(**kwargs):
-    c = kwargs['c']
-    m = kwargs['m']
-    checks = kwargs['checks']
-    check1 = await checks.perms(['ban_members'], kwargs['g'], c, m)
+async def run(env):
+    args = env['args']
+    msg = env['msg']
+    g = env['g']
+    c = env['c']
+    m = env['m']
+
+    check1 = await checks.perms(['ban_members'], g, c, m)
     if not check1: return
     # checks for mentions
-    if not kwargs['msg'].mentions:
+    if not msg.mentions:
         return await c.send("Please provide a member to ban.")
 
-    member = kwargs['msg'].mentions[0]
+    member = msg.mentions[0]
 
-    check2 = await checks.roles(m, member, kwargs['g'], c)
+    check2 = await checks.roles(m, member, g, c)
     if not check2: return
 
-    reason = " ".join(kwargs['args'][1:len(kwargs['args'])]) or "None"
+    reason = " ".join(args[1:len(args)]) or "None"
 
     try:
         # try to tell the member they've been banned
         try:
-            await member.send(f"{member}, you have been **banned** from {kwargs['g']} by {m}.\nReason: {reason}")
+            await member.send(f"{member}, you have been **banned** from {g} by {m}.\nReason: {reason}")
         # if it doesn't work, ignore it and move on
         except:
             pass

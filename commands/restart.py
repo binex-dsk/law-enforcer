@@ -1,11 +1,14 @@
 import subprocess
+from constants import checks
 
 no_docs = True
 
-async def run(**kwargs):
-    checks = kwargs['checks']
-    check = await checks.owner(kwargs['c'], kwargs['m'])
+async def run(env):
+    c = env['c']
+    m = env['m']
+
+    check = await checks.owner(c, m)
     if not check: return
-    await kwargs['c'].send("Restarting...")
+    await c.send("Restarting...")
 
     exit()

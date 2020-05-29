@@ -1,2 +1,2 @@
 # Another init file.
-from . import *
+from . import addtag, ban, bash, clear, contact, eval, help, info, kick, mute, ping, removetag, restart, setup, tag, taginfo, tags, unban, unmute, setmuted

@@ -12,6 +12,7 @@ no_docs = False
 
 async def run(env):
     args = env['args']
+    client = env['client']
     g = env['g']
     c = env['c']
     conn = env['conn']

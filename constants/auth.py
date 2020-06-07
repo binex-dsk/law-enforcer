@@ -1,4 +1,4 @@
-token = 'Njk2MTI0NTM0Njc5NTM1NzI4.Xs8ruA.fG-Xk9p8FczZ-y39WOvTwGPq_dk'
+token = ''
 prefix = '~~'
 game = f'Follow the rules. {prefix}help'
 

@@ -18,16 +18,22 @@ async def run(env):
     conn = env['conn']
     tags = env['tags']
     check = await checks.perms(['manage_guild'], g, c, m)
-    if not check: return
+    if not check:
+        return
     if len(args) < 1:
         return await c.send('Please provide a tag name.')
+
     tagname = args[0]
+
     if db.exists(tags, {'name': tagname}, conn):
         return await c.send('That tag is already in the server.')
+
     if len(args) < 2:
         return await c.send('Please provide tag content.')
+
     tagcont = ' '.join(args[1:len(args)])
     now = datetime.now()
+
     # basically, this code just adds the tag to a SQL table
     try:
         db.insert(tags,

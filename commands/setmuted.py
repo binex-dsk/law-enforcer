@@ -3,11 +3,11 @@ from constants import checks, db
 
 name = 'setmuted'
 long = 'Set the muted role for the server.'
-syntax = "(role ID)"
-ex1 = "705538476698763324"
-ex2 = "644334910810619924"
-notes = "The usage of the `mute` and `unmute` commands will not be available until this is used."
-reqperms = "`manage server`\n`manage roles`"
+syntax = '(role ID)'
+ex1 = '705538476698763324'
+ex2 = '644334910810619924'
+notes = 'The usage of the `mute` and `unmute` commands will not be available until this is used.'
+reqperms = '`manage server`\n`manage roles`'
 no_docs = False
 
 async def run(env):
@@ -19,14 +19,19 @@ async def run(env):
     roles = env['muted_roles']
 
     check = await checks.perms(['manage_guild', 'manage_roles'], g, c, m)
-    if not check: return
+    if not check:
+        return
     if len(args) < 1:
-        return await c.send("Please provide a role ID.")
+        return await c.send('Please provide a role ID.')
+    try:
+        id = int(args[0])
+    except:
+        return await c.send('Please provide a valid ID.')
 
-    role = discord.utils.get(g.roles, id=int(args[0]))
+    role = discord.utils.get(g.roles, id=id)
 
     if not role:
-        return await c.send("This role is not present in the server.")
+        return await c.send('This role is not present in the server.')
 
     fetched = db.fetch(roles, {'guild': g.id}, conn)
     row = None
@@ -36,21 +41,20 @@ async def run(env):
         pass
 
     if row:
-        if row.id == int(args[0]):
-            return await c.send("This role is already the muted role.")
+        if row.id == id:
+            return await c.send('This role is already the muted role.')
 
         try:
             db.update(roles, {'guild': g.id}, {'id': args[0]}, conn)
-            return await c.send(f"Successfully set muted role to {role.mention}.")
+            return await c.send(f'Successfully set muted role to {role.mention}.')
         except Exception as e:
             print(e)
-            await c.send(f"Error while setting muted role:\n{e}")
+            await c.send(f'Error while setting muted role:\n{e}')
     else:
         try:
             db.insert(roles, {'id': args[0], 'guild': g.id}, conn)
 
-            return await c.send(f"Successfully set muted role to {role.mention}.")
+            return await c.send(f'Successfully set muted role to {role.mention}.')
         except Exception as e:
             print(e)
-            return await c.send(f"Error while setting muted role:\n{e}")
-    
+            return await c.send(f'Error while setting muted role:\n{e}')

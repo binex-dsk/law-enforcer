@@ -1,4 +1,4 @@
-
+# pylint: disable=unused-variable
 def exists(table, values, conn): # I could do this way better but this works
     selection = table.select()
     for i in range(len(values)):
@@ -22,7 +22,7 @@ def insert(table, values, conn):
 def delete(table, values, conn):
     fetched = fetch(table, values, conn)
     if not fetched:
-        raise Exception("Row not found.")
+        raise Exception('Row not found.')
 
     del_select = table.delete()
     for i in range(len(values)):
@@ -44,7 +44,7 @@ def fetch(table, values, conn):
 def update(table, checkVals, newVals, conn):
     fetched = fetch(table, checkVals, conn)
     if not fetched:
-        raise Exception("Row not found.")
+        raise Exception('Row not found.')
     upd = table.update()
     for i in range(len(checkVals)):
         key = list(checkVals.keys())[i]
@@ -56,5 +56,3 @@ def update(table, checkVals, newVals, conn):
         val = list(newVals.values())[i]
         upd = upd.values({key: val})
     return conn.execute(upd)
-
-#def fetch_property(table, values, property, conn)

@@ -1,4 +1,5 @@
-import discord, ast, math, random
+# pylint: disable=unused-variable
+import random, ast, discord
 from constants import checks
 
 no_docs = True
@@ -26,31 +27,30 @@ async def run(env):
     g = env['g']
     c = env['c']
     m = env['m']
-    start_time = env['start_time']
-    conn = env['conn']
-    tags = env['tags']
-    muted_roles = env['muted_roles']
 
     check = await checks.owner(c, m)
-    if not check: return
-    
-    if not len(args) > 0:
-        return await c.send("You must include code to eval!")
-    # the following code is modified from https://gist.github.com/nitros12/2c3c265813121492655bc95aa54da6b9. go check that one out
-    try:
-        fn_name = "_eval_expr"
+    if not check:
+        return
 
-        cmd = " ".join(args).strip("` ").replace("“", "\"").replace("”", "\"") # for mobile shit
+    if not len(args) > 0:
+        return await c.send('You must include code to eval!')
+    # the following code is modified from
+    # https://gist.github.com/nitros12/2c3c265813121492655bc95aa54da6b9. go check that one out
+    try:
+        fn_name = '_eval_expr'
+
+        cmd = ' '.join(args).strip('` ').replace('“', '"')\
+        .replace('”', '"') # for mobile smart quotes
 
         emb = discord.Embed()
-        emb.add_field(name="Eval", value=f"```py\n{cmd}```", inline=False)
-        emb.color = random.randint(0,16777215)
+        emb.add_field(name='Eval', value=f'```py\n{cmd}```', inline=False)
+        emb.color = random.randint(0, 16777215)
 
         # add a layer of indentation
-        cmd = "\n".join(f"    {i}" for i in cmd.splitlines())
+        cmd = '\n'.join(f'    {i}' for i in cmd.splitlines())
 
         # wrap in async def body
-        body = f"async def {fn_name}():\n{cmd}"
+        body = f'async def {fn_name}():\n{cmd}'
 
         parsed = ast.parse(body)
         body = parsed.body[0].body
@@ -58,10 +58,10 @@ async def run(env):
         insert_returns(body)
 
         # eval the code
-        exec(compile(parsed, filename="<ast>", mode="exec"), env)
+        exec(compile(parsed, filename='<ast>', mode='exec'), env)
 
-        result = (await eval(f"{fn_name}()", env))
-        await c.send(embed=emb.add_field(name="Returns", value=f"```py\n{result}```", inline=False))
+        result = (await eval(f'{fn_name}()', env))
+        await c.send(embed=emb.add_field(name='Returns', value=f'```py\n{result}```', inline=False))
     except Exception as err:
         emb.color = discord.Colour.red()
-        await c.send(embed=emb.add_field(name="Error", value=f"```py\n{err}```", inline=False))
+        await c.send(embed=emb.add_field(name='Error', value=f'```py\n{err}```', inline=False))

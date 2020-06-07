@@ -1,12 +1,10 @@
-import discord, json, math, asyncio, ast, random, subprocess, os
+from commands import __dict__ as commands
+
 from datetime import datetime
 from sqlalchemy import Table, Column, Integer, String, MetaData, create_engine
+import discord
 
-from constants.auth import token, prefix, game, ids
-from constants.resp import info, helpCmd
-from constants import checks, db
-
-from commands import __dict__ as commands
+from constants.auth import token, prefix, game
 
 client = discord.Client()
 
@@ -16,13 +14,17 @@ meta = None
 engine = None
 tags = None
 muted_roles = None
+
 @client.event
 async def on_ready():
     global start_time, conn, meta, engine, tags, muted_roles
+
     # used for uptime
     start_time = datetime.now()
+
     await client.change_presence(status=discord.Status.online, activity=discord.Game(game))
-    print("Successfully logged in.")
+    print('Successfully logged in.')
+
     engine = create_engine('sqlite:///database.db')
     meta = MetaData()
     conn = engine.connect()
@@ -40,8 +42,8 @@ async def on_ready():
         Column('id', Integer),
         Column('guild', Integer)
     )
-    meta.create_all(engine)
 
+    meta.create_all(engine)
 
 @client.event
 async def on_message(msg):
@@ -54,7 +56,7 @@ async def on_message(msg):
         return
 
     # the actual arguments
-    args = msg.content[len(prefix):len(msg.content)].strip().split(" ")
+    args = msg.content[len(prefix):len(msg.content)].strip().split(' ')
 
     # get the command
     cmd = args[0].lower()
@@ -85,12 +87,13 @@ async def on_message(msg):
     try:
         await command.run(env)
     except Exception as e:
-        await c.send(f"Error during command execution:\n{e}\nPlease contact the owner with details of this error immediately.")
+        await c.send(f'Error during command execution:\n{e}\n'\
+        'Please contact the owner with details of this error immediately.')
         print(e)
-    
+
 # tries to login with the token
 try:
     client.run(token)
 # if it fails, print the error
 except discord.errors.LoginFailure as err:
-    print(f"Failed to login. Token: {token}\n{err}")
+    print(f'Failed to login. Token: {token}\n{err}')

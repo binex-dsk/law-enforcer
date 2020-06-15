@@ -15,8 +15,9 @@ async def run(env):
     c = env['c']
     m = env['m']
 
-    check = await checks.perms(['manage_messages', 'read_message_history'], g, c, m)
-    if not check:
+    try:
+        await checks.perms(['manage_messages', 'read_message_history'], g, c, m)
+    except:
         return
 
     if len(args) < 1:

@@ -20,6 +20,7 @@ async def run(env):
     cmd = None
     if len(args) > 0:
         cmd = commands.get(args[0])
+
     if not len(args) > 0:
         helpEmb.set_author(name='Invite me here!', url=discord.utils.oauth_url(client.user.id,
         permissions=discord.Permissions(permissions=268561591)), icon_url=client.user.avatar_url)

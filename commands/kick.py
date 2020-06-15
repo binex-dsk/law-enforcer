@@ -18,8 +18,9 @@ async def run(env):
     c = env['c']
     m = env['m']
 
-    check1 = await checks.perms(['kick_members', 'create_instant_invite'], g, c, m)
-    if not check1:
+    try:
+        await checks.perms(['kick_members', 'create_instant_invite'], g, c, m)
+    except:
         return
 
     if not msg.mentions:
@@ -27,8 +28,9 @@ async def run(env):
 
     member = msg.mentions[0]
 
-    check2 = await checks.roles(m, member, g, c)
-    if not check2:
+    try:
+        await checks.roles(m, member, g, c)
+    except:
         return
 
     reason = ' '.join(args[1:len(args)]) or 'None'

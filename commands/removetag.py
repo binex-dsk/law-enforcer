@@ -18,8 +18,9 @@ async def run(env):
     conn = env['conn']
     tags = env['tags']
 
-    check = await checks.perms(['manage_guild'], g, c, m)
-    if not check:
+    try:
+        await checks.perms(['manage_guild'], g, c, m)
+    except:
         return
 
     if len(args) < 1:

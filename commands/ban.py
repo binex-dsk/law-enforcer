@@ -16,9 +16,11 @@ async def run(env):
     c = env['c']
     m = env['m']
 
-    check1 = await checks.perms(['ban_members'], g, c, m)
-    if not check1:
+    try:
+        await checks.perms(['ban_members'], g, c, m)
+    except:
         return
+
     # checks for mentions
     if not msg.mentions:
         return await c.send('Please provide a member to ban.')

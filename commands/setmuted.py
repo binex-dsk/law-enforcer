@@ -18,15 +18,15 @@ async def run(env):
     conn = env['conn']
     roles = env['muted_roles']
 
-    check = await checks.perms(['manage_guild', 'manage_roles'], g, c, m)
-    if not check:
+    try:
+        await checks.perms(['manage_guild', 'manage_roles'], g, c, m)
+    except:
         return
-    if len(args) < 1:
-        return await c.send('Please provide a role ID.')
+
     try:
         id = int(args[0])
     except:
-        return await c.send('Please provide a valid ID.')
+        return await c.send('Please provide a valid role ID.')
 
     role = discord.utils.get(g.roles, id=id)
 

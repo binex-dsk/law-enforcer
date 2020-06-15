@@ -18,8 +18,9 @@ async def run(env):
     c = env['c']
     m = env['m']
 
-    check = await checks.perms(['administrator'], g, c, m)
-    if not check:
+    try:
+        await checks.perms(['administrator'], g, c, m)
+    except:
         return
 
     await c.send('Welcome to the interactive server setup!\n'\

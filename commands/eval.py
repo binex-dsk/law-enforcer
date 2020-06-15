@@ -28,12 +28,14 @@ async def run(env):
     c = env['c']
     m = env['m']
 
-    check = await checks.owner(c, m)
-    if not check:
+    try:
+        await checks.owner(c, m)
+    except:
         return
 
     if not len(args) > 0:
         return await c.send('You must include code to eval!')
+
     # the following code is modified from
     # https://gist.github.com/nitros12/2c3c265813121492655bc95aa54da6b9. go check that one out
     try:

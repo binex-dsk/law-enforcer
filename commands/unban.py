@@ -18,8 +18,9 @@ async def run(env):
     c = env['c']
     m = env['m']
 
-    check = await checks.perms(['ban_members'], g, c, m)
-    if not check:
+    try:
+        await checks.perms(['ban_members'], g, c, m)
+    except:
         return
 
     if len(args) < 1:

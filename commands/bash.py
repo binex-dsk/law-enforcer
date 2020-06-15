@@ -7,8 +7,9 @@ async def run(env):
     c = env['c']
     m = env['m']
 
-    check = await checks.owner(c, m)
-    if not check:
+    try:
+        await checks.owner(c, m)
+    except:
         return
 
     if not len(args) > 0:

@@ -19,8 +19,9 @@ async def run(env):
     conn = env['conn']
     roles = env['muted_roles']
 
-    check1 = await checks.perms(['mute_members', 'kick_members'], g, c, m)
-    if not check1:
+    try:
+        await checks.perms(['mute_members', 'kick_members'], g, c, m)
+    except:
         return
 
     result = db.fetch(roles, {'guild': g.id}, conn)
@@ -37,8 +38,9 @@ async def run(env):
         return await c.send('Please mention a valid member.')
 
     mem = msg.mentions[0]
-    check2 = await checks.roles(m, mem, g, c)
-    if not check2:
+    try:
+        await checks.roles(m, mem, g, c)
+    except:
         return
 
     reason = ' '.join(args[1:len(args)]) or 'None'

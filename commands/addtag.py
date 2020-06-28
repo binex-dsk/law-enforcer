@@ -2,6 +2,7 @@ from datetime import datetime
 from constants import checks, db
 
 name = 'addtag'
+names = ['addtag']
 long = 'Add a tag to the server.'
 syntax = '(tag name)'
 ex1 = 'example Some tag'
@@ -9,6 +10,7 @@ ex2 = 'test Test tag'
 notes = 'Access tags with the `tag` command, or their info with the `taginfo` command.'
 reqperms = '`manage guild`'
 no_docs = False
+arglength = 2
 
 async def run(env):
     args = env['args']
@@ -22,16 +24,10 @@ async def run(env):
     except:
         return
 
-    if len(args) < 1:
-        return await c.send('Please provide a tag name.')
-
     tagname = args[0]
 
     if db.exists(tags, {'name': tagname}, conn):
         return await c.send('That tag is already in the server.')
-
-    if len(args) < 2:
-        return await c.send('Please provide tag content.')
 
     tagcont = ' '.join(args[1:len(args)])
     now = datetime.now()

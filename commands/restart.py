@@ -1,6 +1,9 @@
+import sys
 from constants import checks
 
+names = ['restart', 'reset', 'update']
 no_docs = True
+arglength = 0
 
 async def run(env):
     c = env['c']
@@ -12,4 +15,4 @@ async def run(env):
         return
     await c.send('Restarting...')
 
-    exit()
+    sys.exit()

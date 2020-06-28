@@ -1,7 +1,10 @@
 import os
 from constants import checks
 
+names = ['bash']
 no_docs = True
+arglength = 0
+
 async def run(env):
     args = env['args']
     c = env['c']

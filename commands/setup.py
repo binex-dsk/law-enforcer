@@ -2,6 +2,7 @@ import discord
 from constants import checks, setup_funcs # noqa
 
 name = 'setup'
+names = ['setup']
 long = 'Setup your brand-new server.'
 syntax = ''
 ex1 = False
@@ -10,6 +11,7 @@ notes = 'This server setup is very much in a beta state. '\
 'Any issues must be redirected to the owner, using the `contact` command.'
 reqperms = '`administrator`'
 no_docs = False
+arglength = 0
 
 # this isn't the most efficient but it works
 async def run(env):

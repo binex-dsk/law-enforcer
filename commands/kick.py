@@ -1,6 +1,7 @@
 from constants import checks
 
 name = 'kick'
+names = ['kick', 'softban']
 long = 'Kick a user from the server.'
 syntax = '(user) (reason || none)'
 ex1 = 'id1 don\'t do that again'
@@ -10,6 +11,7 @@ notes = 'The user is DMed upon being kicked. Additionally, '\
 '\nIn later versions, there will be options to disable this.'
 reqperms = '`kick members`\n`create instant invite`'
 no_docs = False
+arglength = 1
 
 async def run(env):
     args = env['args']

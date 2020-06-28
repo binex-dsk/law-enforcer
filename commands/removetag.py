@@ -1,6 +1,7 @@
 from constants import checks, db
 
 name = 'removetag'
+names = ['removetag', 'deletetag', 'deltag']
 long = 'Remove a tag from the server.'
 syntax = '(tag name)'
 ex1 = 'example'
@@ -8,6 +9,7 @@ ex2 = 'test'
 notes = False
 reqperms = '`manage guild`'
 no_docs = False
+arglength = 1
 
 async def run(env):
     args = env['args']

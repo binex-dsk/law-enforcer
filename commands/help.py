@@ -1,10 +1,14 @@
+from types import ModuleType
 import random, discord
+
 from groups import __dict__ as groups
 from constants.auth import ids, prefix
 from constants.resp import helpCmd
 from . import __dict__ as commands
 
+names = ['help']
 no_docs = True
+arglength = 0
 
 async def run(env):
     args = env['args']
@@ -19,7 +23,8 @@ async def run(env):
 
     cmd = None
     if len(args) > 0:
-        cmd = commands.get(args[0])
+        cmd = discord.utils.find(lambda cm: args[0] in cm.names,
+        list(filter(lambda x: isinstance(x, ModuleType), list(commands.values()))))
 
     if not len(args) > 0:
         helpEmb.set_author(name='Invite me here!', url=discord.utils.oauth_url(client.user.id,
@@ -29,7 +34,7 @@ async def run(env):
 
         helpEmb.description = 'This is a list of all groups and their commands.'
 
-        for group in list(filter(lambda x: (type(x) == type(discord)), groups.values())):
+        for group in list(filter(lambda x: isinstance(x, ModuleType), groups.values())):
             # i could do this way better but im too lazy
 
             helpEmb.add_field(name=group.name,
@@ -48,7 +53,7 @@ async def run(env):
             ex2 = ex2.replace('id2', id2)
 
         helpEmb = helpCmd(helpEmb, cmd.name, cmd.long, cmd.syntax,
-        ex1, ex2, cmd.notes, cmd.reqperms)
+        ex1, ex2, cmd.notes, cmd.names, cmd.reqperms)
     # no valid command? go here
     else:
         helpEmb.title = 'Invalid command!'

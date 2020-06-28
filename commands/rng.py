@@ -1,6 +1,7 @@
 import random
 
 name = 'rng'
+names = ['rng', 'random']
 long = 'Generate a random number.'
 syntax = '(min \|\| 0) (max \|\| 10)'
 ex1 = '5 13'
@@ -8,6 +9,7 @@ ex2 = ' '
 notes = 'This only generates integers at the moment.'
 reqperms = 'none'
 no_docs = False
+arglength = 0
 
 async def run(env):
     args = env['args']

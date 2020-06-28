@@ -2,6 +2,7 @@ import discord
 from constants import checks, db
 
 name = 'setmuted'
+names = ['setmuted', 'mutedrole']
 long = 'Set the muted role for the server.'
 syntax = '(role ID)'
 ex1 = '705538476698763324'
@@ -9,6 +10,7 @@ ex2 = '644334910810619924'
 notes = 'The usage of the `mute` and `unmute` commands will not be available until this is used.'
 reqperms = '`manage server`\n`manage roles`'
 no_docs = False
+arglength = 1
 
 async def run(env):
     args = env['args']

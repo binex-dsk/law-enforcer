@@ -1,6 +1,7 @@
 from constants import checks
 
 name = 'clear'
+names = ['clear', 'purge']
 long = 'Clear a certain amount of messages.'
 syntax = '(amount || 20)'
 ex1 = '40'
@@ -8,6 +9,7 @@ ex2 = ' '
 notes = 'The limit for this is very high (10000), but higher values (>2000) will be slower.'
 reqperms = '`manage messages`\n`read message history`'
 no_docs = False
+arglength = 1
 
 async def run(env):
     args = env['args']

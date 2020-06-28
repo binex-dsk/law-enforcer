@@ -1,6 +1,7 @@
 from constants import checks
 
 name = 'ban'
+names = ['ban', 'snipe']
 long = 'Ban a user from the server.'
 syntax = '(user) (reason || none)'
 ex1 = 'id1 dumb stupid'
@@ -8,6 +9,7 @@ ex2 = 'id2'
 notes = 'The user is DMed upon being banned.'
 reqperms = '`ban members`'
 no_docs = False
+arglength = 1
 
 async def run(env):
     args = env['args']

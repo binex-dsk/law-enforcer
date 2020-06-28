@@ -1,6 +1,7 @@
 from constants import db
 
 name = 'tag'
+names = ['tag', 'gettag']
 long = 'Access a tag in the server.'
 syntax = '(tag name)'
 ex1 = 'example'
@@ -9,6 +10,7 @@ notes = 'Tags are specific to servers. Global tags may be added later, '\
 'but for now, tags can only be used in the server they were created in.'
 reqperms = 'None'
 no_docs = False
+arglength = 1
 
 async def run(env):
     args = env['args']

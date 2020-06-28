@@ -1,4 +1,5 @@
-from commands import __dict__ as commands
+from commands import __dict__ as cmds
+from types import ModuleType
 
 from datetime import datetime
 from sqlalchemy import Table, Column, Integer, String, MetaData, create_engine
@@ -68,7 +69,8 @@ async def on_message(msg):
     g = msg.guild
     m = msg.author
 
-    command = commands.get(cmd)
+    command = discord.utils.find(lambda cm: cmd in cm.names,
+        list(filter(lambda x: isinstance(x, ModuleType), list(cmds.values()))))
     if not command:
         return
     # environment to run commands
@@ -84,6 +86,9 @@ async def on_message(msg):
         'tags': tags,
         'muted_roles': muted_roles
     }
+    if command.arglength > len(args):
+        return await c.send(f'This command requires more arguments. Please use '\
+            f'`{prefix}help {command.name}` for more info.')
     try:
         await command.run(env)
     except Exception as e:

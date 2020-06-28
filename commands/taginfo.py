@@ -2,6 +2,7 @@ import discord
 from constants import db
 
 name = 'taginfo'
+names = ['taginfo']
 long = 'Get info on a tag in the server.'
 syntax = '(tag name)'
 ex1 = 'example'
@@ -10,6 +11,7 @@ notes = 'Similarly to the `tag` command, tags are specific to servers. '\
 'This command gives you the tag name, content, author, and creation date.'
 reqperms = 'None'
 no_docs = False
+arglength = 1
 
 async def run(env):
     args = env['args']

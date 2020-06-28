@@ -2,6 +2,7 @@ import discord
 from constants import db
 
 name = 'tags'
+names = ['tags', 'taglist']
 long = 'Get a list of all tags in the server.'
 syntax = ''
 ex1 = False
@@ -10,6 +11,7 @@ notes = 'Potentially, if you have enough tags, the bot won\'t be able to display
 'However, the amount of tags required for this to happen is huge, so don\'t worry about it.'
 reqperms = 'None'
 no_docs = False
+arglength = 0
 
 async def run(env):
     g = env['g']

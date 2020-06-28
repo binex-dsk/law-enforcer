@@ -2,6 +2,7 @@ import asyncio, discord
 from constants import checks, db
 
 name = 'mute'
+names = ['mute']
 long = 'Mute a user for a certain amount of time'
 syntax = '(user) (time) (reason || none)'
 ex1 = 'id1 24 stop spamming'
@@ -9,6 +10,7 @@ ex2 = 'id2 0.5'
 notes = 'The user is DMed when they are muted, as well as automatically unmuted.'
 reqperms = '`mute members`\n`kick members`'
 no_docs = False
+arglength = 2
 
 async def unmute(m, t, r, role):
     await asyncio.sleep(t*60*60)
@@ -57,10 +59,6 @@ async def run(env):
     # makes sure they aren't already muted
     if muted_role in mem.roles:
         return await c.send('That member is already muted.')
-
-    if not len(args) > 1:
-        return await c.send('Please provide an amount of time to mute this user for.')
-
 
     reason = ' '.join(args[2:len(args)]) or 'None'
     try:

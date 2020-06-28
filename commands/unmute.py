@@ -2,6 +2,7 @@ import discord
 from constants import checks, db
 
 name = 'unmute'
+names = ['unmute']
 long = 'Unmuted a muted user.'
 syntax = '(user) (reason || none)'
 ex1 = 'id1 said sorry in dms'
@@ -9,6 +10,7 @@ ex2 = 'id2'
 notes = 'The user is DMed when unmuted.'
 reqperms = '`mute members`\n`kick members`'
 no_docs = False
+arglength = 1
 
 async def run(env):
     args = env['args']

@@ -1,28 +1,33 @@
-name = 'tag'
-long = 'Access a tag in the server.'
-syntax = "(tag name)"
-ex1 = "example"
-ex2 = "test"
-notes = "Tags are specific to servers. Global tags may be added later, but for now, tags can only be used in the server they were created in."
-reqperms = "None"
-no_docs = False
+from constants import db
 
-async def run(**kwargs):
-    g = kwargs['g']
-    c = kwargs['c']
-    args = kwargs['args']
-    conn = kwargs['conn']
-    tags = kwargs['tags']
+name = 'tag'
+names = ['tag', 'gettag']
+long = 'Access a tag in the server.'
+syntax = '(tag name)'
+ex1 = 'example'
+ex2 = 'test'
+notes = 'Tags are specific to servers. Global tags may be added later, '\
+'but for now, tags can only be used in the server they were created in.'
+reqperms = 'None'
+no_docs = False
+arglength = 1
+
+async def run(env):
+    args = env['args']
+    g = env['g']
+    c = env['c']
+    conn = env['conn']
+    tags = env['tags']
+
     if len(args) < 1:
-        return await c.send("Please provide a tag.")
+        return await c.send('Please provide a tag.')
+
     tagname = args[0]
-    tagg = g.id
-    s = tags.select().where(tags.c.name==tagname).where(tags.c.guild==tagg)
-    result = conn.execute(s)
-    try:
-        # just checks for a tag that is in the current guild and is the specified name
-        row = result.fetchone()
-        return await c.send(row.content)
-    except Exception as e:
-        await c.send(f"That tag does not exist in this server.")
-        print(e)
+
+    tag = db.fetch(tags, {'name': tagname, 'guild': g.id}, conn)
+
+    if not tag:
+        return await c.send('That tag doesn\'t exist in this server.')
+    tag = tag.fetchone()
+    await c.send(tag.content)
+    

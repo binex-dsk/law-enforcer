@@ -1,10 +1,18 @@
-import subprocess
+import sys
+from constants import checks
 
+names = ['restart', 'reset', 'update']
 no_docs = True
+arglength = 0
 
-async def run(**kwargs):
-    if not kwargs['m'].id in kwargs['ids']:
-        return await kwargs['c'].send(kwargs['owneronly'])
-    await kwargs['c'].send("Restarting...")
-    # runs the restart command, see constants
-    exit()
+async def run(env):
+    c = env['c']
+    m = env['m']
+
+    try:
+        await checks.owner(c, m)
+    except:
+        return
+    await c.send('Restarting...')
+
+    sys.exit()

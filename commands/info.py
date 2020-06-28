@@ -1,9 +1,14 @@
 from datetime import datetime
+from constants.resp import info
 
+names = ['info']
 no_docs = True
-async def run(**kwargs):
+arglength = 0
+
+async def run(env):
     # staticinfo and endinfo are used to shorten this a bit, see constants
     # the uptime is just the current total of seconds it's been up
-    await kwargs['c'].send(f"{kwargs['staticinfo']}\nCurrent uptime: "
-    f"{round((datetime.now()-kwargs['startTime']).total_seconds())} "
-    f"seconds\nCurrent latency: {round(kwargs['client'].latency*1000)}```\n{kwargs['endinfo']}")
+
+    await env['c'].send(info.format('\nCurrent uptime: '\
+    f'{round((datetime.now()-env["start_time"]).total_seconds())}'\
+    f' seconds\nCurrent latency: {round(env["client"].latency*1000)}'))

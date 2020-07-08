@@ -1,0 +1,41 @@
+This is a list of permissions to deny/allow for the channel setup.
+
+Text and Category only:
+add_reactions
+attach_files
+create_instant_invite
+embed_links
+external_emojis
+manage_emojis
+manage_messages
+manage_permissions
+manage_roles
+manage_webhooks
+mention_everyone
+read_message_history
+read_messages
+send_messages
+send_tts_messages
+use_external_emojis
+view_channel
+
+Voice and Category only:
+connect
+deafen_members
+move_members
+mute_members
+priority_speaker
+speak
+stream
+use_voice_activation
+
+Non-Functional:
+administrator
+ban_members
+change_nickname
+kick_members
+manage_guild
+manage_nicknames
+manage_emojis
+view_audit_log
+view_guild_insights

@@ -15,4 +15,4 @@ async def run(env):
         return
     await c.send('Restarting...')
 
-    sys.exit()
+    sys.exit(0)

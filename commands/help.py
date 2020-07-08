@@ -40,7 +40,7 @@ async def run(env):
             helpEmb.add_field(name=group.name,
             value=f'{group.description}\n`{"`, `".join(group.commands)}`', inline=False)
 
-        helpEmb.set_footer(text='Law Enforcer v1.0', icon_url=client.user.avatar_url)
+        helpEmb.set_footer(text='Law Enforcer v1.0.1', icon_url=client.user.avatar_url)
 
     elif cmd:
         if cmd.no_docs:

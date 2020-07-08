@@ -26,7 +26,7 @@ async def run(env):
         return
 
     await c.send('Welcome to the interactive server setup!\n'\
-    'This is a guide to help set your server up like any good server.\n'\
+    'This is a guide to help set your server up.\n'\
     'To get you started, let\'s go through some basic things.\n'\
     'First off, do you want to change your server\'s name?\n'\
     'Type the new name if so, otherwise type `n`.')
@@ -70,7 +70,7 @@ async def run(env):
     check=lambda s: s.author.id == m.id and s.content in ['y', 'n'])
 
     if ms.content == 'y':
-        await c.send('Alright. Do you want full admin privileges or just full permissions\n'\
+        await c.send('Alright. Do you want full admin privileges or just full permissions?\n'\
         'NOTE: Giving full admin privileges is dangerous! '\
         'Only select this if you trust your admins.\n'\
         'Type `y` if you want full admin privileges, '\
@@ -97,6 +97,10 @@ async def run(env):
     await c.send('Now, we will set up a few roles!')
 
     await setup_funcs.role(g, c, m, client)
+
+    await c.send('Now, let\'s create some channels!')
+
+    await setup_funcs.channel(g, c, m, client)
 
     await c.send('Thank you for using the interactive server setup!\n'\
     'Please contact the owner for feedback, errors, or other similar things.')

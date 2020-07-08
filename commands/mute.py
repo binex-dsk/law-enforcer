@@ -8,7 +8,7 @@ syntax = '(user) (time) (reason || none)'
 ex1 = 'id1 24 stop spamming'
 ex2 = 'id2 0.5'
 notes = 'The user is DMed when they are muted, as well as automatically unmuted.'
-reqperms = '`mute members`\n`kick members`'
+reqperms = '`mute members`\n`kick members`\n`manage roles`'
 no_docs = False
 arglength = 2
 
@@ -32,7 +32,7 @@ async def run(env):
     roles = env['muted_roles']
 
     try:
-        await checks.perms(['mute_members', 'kick_members'], g, c, m)
+        await checks.perms(['mute_members', 'kick_members', 'manage_roles'], g, c, m)
     except:
         return
 

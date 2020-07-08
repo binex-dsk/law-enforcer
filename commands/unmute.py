@@ -8,7 +8,7 @@ syntax = '(user) (reason || none)'
 ex1 = 'id1 said sorry in dms'
 ex2 = 'id2'
 notes = 'The user is DMed when unmuted.'
-reqperms = '`mute members`\n`kick members`'
+reqperms = '`mute members`\n`kick members`\n`manage roles`'
 no_docs = False
 arglength = 1
 
@@ -22,7 +22,7 @@ async def run(env):
     roles = env['muted_roles']
 
     try:
-        await checks.perms(['mute_members', 'kick_members'], g, c, m)
+        await checks.perms(['mute_members', 'kick_members', 'manage_roles'], g, c, m)
     except:
         return
 

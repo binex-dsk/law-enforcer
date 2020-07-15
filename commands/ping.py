@@ -12,10 +12,11 @@ no_docs = False
 arglength = 0
 
 async def run(env):
+    client, c = [env[k] for k in ('client', 'c')]
     # get the current time
     start = datetime.now()
     # send the client ping
-    message = await env['c'].send(f'Client Ping: {round(env["client"].latency*1000)}')
+    message = await c.send(f'Client Ping: {round(client.latency*1000)}')
     # then add the current time - the start time
     await message.edit(content=f'{message.content}\nAPI Ping: '\
     f'{round((datetime.now().microsecond-start.microsecond)/1000)}')

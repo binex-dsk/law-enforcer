@@ -15,10 +15,7 @@ arglength = 0
 
 # this isn't the most efficient but it works
 async def run(env):
-    client = env['client']
-    g = env['g']
-    c = env['c']
-    m = env['m']
+    client, g, c, m = [env[k] for k in ('client', 'g', 'c', 'm')]
 
     try:
         await checks.perms(['administrator'], g, c, m)

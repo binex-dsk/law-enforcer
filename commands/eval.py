@@ -23,12 +23,7 @@ def insert_returns(body):
 
 async def run(env):
     # the unused vars are for eval to be more dynamic
-    args = env['args']
-    msg = env['msg']
-    client = env['client']
-    g = env['g']
-    c = env['c']
-    m = env['m']
+    args, msg, client, g, c, m = [env[k] for k in ('args', 'msg', 'client', 'g', 'c', 'm')]
 
     try:
         await checks.owner(c, m)

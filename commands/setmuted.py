@@ -1,5 +1,6 @@
 import discord
 from constants import checks, db
+from tables import muted_roles as roles
 
 name = 'setmuted'
 names = ['setmuted', 'mutedrole']
@@ -13,12 +14,7 @@ no_docs = False
 arglength = 1
 
 async def run(env):
-    args = env['args']
-    g = env['g']
-    c = env['c']
-    m = env['m']
-    conn = env['conn']
-    roles = env['muted_roles']
+    args, g, c, m = [env[k] for k in ('args', 'g', 'c', 'm')]
 
     try:
         await checks.perms(['manage_guild', 'manage_roles'], g, c, m)
@@ -35,7 +31,7 @@ async def run(env):
     if not role:
         return await c.send('This role is not present in the server.')
 
-    fetched = db.fetch(roles, {'guild': g.id}, conn)
+    fetched = db.fetch(roles, {'guild': g.id})
     row = None
     try:
         row = fetched.fetchone()
@@ -47,14 +43,14 @@ async def run(env):
             return await c.send('This role is already the muted role.')
 
         try:
-            db.update(roles, {'guild': g.id}, {'id': args[0]}, conn)
+            db.update(roles, {'guild': g.id}, {'id': args[0]})
             return await c.send(f'Successfully set muted role to {role.mention}.')
         except Exception as e:
             print(e)
             await c.send(f'Error while setting muted role:\n{e}')
     else:
         try:
-            db.insert(roles, {'id': args[0], 'guild': g.id}, conn)
+            db.insert(roles, {'id': args[0], 'guild': g.id})
 
             return await c.send(f'Successfully set muted role to {role.mention}.')
         except Exception as e:

@@ -8,7 +8,8 @@ arglength = 0
 async def run(env):
     # staticinfo and endinfo are used to shorten this a bit, see constants
     # the uptime is just the current total of seconds it's been up
+    c, start_time, client = [env[k] for k in ('c', 'start_time', 'client')]
 
-    await env['c'].send(info.format('\nCurrent uptime: '\
-    f'{round((datetime.now()-env["start_time"]).total_seconds())}'\
-    f' seconds\nCurrent latency: {round(env["client"].latency*1000)}'))
+    await c.send(info.format('\nCurrent uptime: '\
+    f'{round((datetime.now()-start_time).total_seconds())}'\
+    f' seconds\nCurrent latency: {round(client.latency*1000)}'))

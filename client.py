@@ -1,50 +1,29 @@
 from commands import __dict__ as cmds
 from types import ModuleType
 
-from datetime import datetime
-from sqlalchemy import Table, Column, Integer, String, MetaData, create_engine
+import calendar, time
+from datetime import datetime, timedelta
+
+import thread
 import discord
 
 from constants.auth import token, prefix, game
+from constants import db
+from tables import conn, tags, muted_roles, muted_members
 
 client = discord.Client()
 
 start_time = 0
-conn = None
-meta = None
-engine = None
-tags = None
-muted_roles = None
 
 @client.event
 async def on_ready():
-    global start_time, conn, meta, engine, tags, muted_roles
-
+    global start_time
     # used for uptime
     start_time = datetime.now()
 
     await client.change_presence(status=discord.Status.online, activity=discord.Game(game))
     print('Successfully logged in.')
-
-    engine = create_engine('sqlite:///database.db')
-    meta = MetaData()
-    conn = engine.connect()
-    tags = Table(
-        'tags', meta,
-        Column('name', String, primary_key=True),
-        Column('content', String),
-        Column('creatortag', String),
-        Column('creatorid', Integer),
-        Column('createdat', String),
-        Column('guild', Integer)
-    )
-    muted_roles = Table(
-        'muted_roles', meta,
-        Column('id', Integer),
-        Column('guild', Integer)
-    )
-
-    meta.create_all(engine)
+    await thread.checkMutes(client)
 
 @client.event
 async def on_message(msg):
@@ -70,7 +49,7 @@ async def on_message(msg):
     m = msg.author
 
     command = discord.utils.find(lambda cm: cmd in cm.names,
-        list(filter(lambda x: isinstance(x, ModuleType), list(cmds.values()))))
+        [x for x in list(cmds.values()) if isinstance(x, ModuleType)])
     if not command:
         return
     # environment to run commands
@@ -81,10 +60,7 @@ async def on_message(msg):
         'g': g,
         'c': c,
         'm': m,
-        'start_time': start_time,
-        'conn': conn,
-        'tags': tags,
-        'muted_roles': muted_roles
+        'start_time': start_time
     }
     if command.arglength > len(args):
         return await c.send(f'This command requires more arguments. Please use '\
@@ -96,6 +72,19 @@ async def on_message(msg):
         'Please contact the owner with details of this error immediately.')
         print(e)
 
+# to prevent mute evasion!
+@client.event
+async def on_member_join(m):
+    muted = muted_members.select().where(muted_members.c.unmute_after <= int(time.time())).where(muted_members.c.id == m.id)
+
+    if muted:
+        await m.add_roles(db.fetch(muted_roles, {'guild': m.guild.id}), 'Mute evasion; added 12 hours to mute time.')
+        db.update(muted_members, {'id': m.id}, {'unmute_after': calendar.timegm((muted.unmute_after + timedelta(hours=12).timetuple()))})
+        try:
+            await m.send(f'Nice try mute evading in {m.guild}. Sorry, but your mute time has been extended by 12 hours. If you believe this is in error, please contact the admins/mods of the server.')
+        except:
+            pass
+    
 # tries to login with the token
 try:
     client.run(token)

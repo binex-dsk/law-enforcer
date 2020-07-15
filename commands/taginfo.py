@@ -1,5 +1,6 @@
 import discord
 from constants import db
+from tables import tags
 
 name = 'taginfo'
 names = ['taginfo']
@@ -14,17 +15,12 @@ no_docs = False
 arglength = 1
 
 async def run(env):
-    args = env['args']
-    client = env['client']
-    g = env['g']
-    c = env['c']
-    conn = env['conn']
-    tags = env['tags']
+    args, client, g, c = [env[k] for k in ('args', 'client', 'g', 'c')]
 
     if len(args) < 1:
         return await c.send('Please provide a tag to search for.')
 
-    tag = db.fetch(tags, {'name': args[0], 'guild': g.id}, conn)
+    tag = db.fetch(tags, {'name': args[0], 'guild': g.id})
 
     if not tag:
         return await c.send('That tag doesn\'t exist in this server.')

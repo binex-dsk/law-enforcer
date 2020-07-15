@@ -6,8 +6,7 @@ no_docs = True
 arglength = 0
 
 async def run(env):
-    c = env['c']
-    m = env['m']
+    c, m = [env[k] for k in ('c', 'm')]
 
     try:
         await checks.owner(c, m)

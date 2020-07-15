@@ -1,5 +1,6 @@
-import asyncio, discord
+import datetime, calendar, discord
 from constants import checks, db
+from tables import muted_roles as roles, muted_members as mems
 
 name = 'mute'
 names = ['mute']
@@ -12,24 +13,12 @@ reqperms = '`mute members`\n`kick members`\n`manage roles`'
 no_docs = False
 arglength = 2
 
-async def unmute(m, t, r, role):
-    await asyncio.sleep(t*60*60)
-    if not role in m.roles:
-        return
-    await m.remove_roles(role, reason=r)
-    try:
-        await m.send(f'You\'ve been automatically unmuted in {m.guild}.')
-    except:
-        pass
+def get_future(hrs):
+    future = datetime.datetime.utcnow() + datetime.timedelta(minutes=int(hrs*60))
+    return calendar.timegm(future.timetuple())
 
 async def run(env):
-    args = env['args']
-    msg = env['msg']
-    g = env['g']
-    c = env['c']
-    m = env['m']
-    conn = env['conn']
-    roles = env['muted_roles']
+    args, msg, g, c, m = [env[k] for k in ('args', 'msg', 'g', 'c', 'm')]
 
     try:
         await checks.perms(['mute_members', 'kick_members', 'manage_roles'], g, c, m)
@@ -37,7 +26,7 @@ async def run(env):
         return
 
     # checks the muted role
-    result = db.fetch(roles, {'guild': g.id}, conn)
+    result = db.fetch(roles, {'guild': g.id})
     if not result:
         return await c.send('No muted role is set! Please set one with `setmuted`.')
 
@@ -72,12 +61,11 @@ async def run(env):
     try:
         # add the muted role to the member
         await mem.add_roles(muted_role, reason=reason)
+        db.insert(mems, {'id': mem.id, 'guild': g.id, 'unmute_after': get_future(time)})
         await c.send(f'Successfully muted {mem} for {time} hours. Reason: {reason}')
         try:
             await mem.send(f'You\'ve been muted in {g} by {m} for {time} hours.\nReason: {reason}')
         except:
             pass
-        # goes to the unmute function, muting them for the specified time
-        await unmute(mem, time, 'Mute time expired', muted_role)
     except Exception as e:
         await c.send(f'Error while muting member: {e}')

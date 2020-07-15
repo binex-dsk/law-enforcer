@@ -1,4 +1,5 @@
 from constants import db
+from tables import tags
 
 name = 'tag'
 names = ['tag', 'gettag']
@@ -13,18 +14,14 @@ no_docs = False
 arglength = 1
 
 async def run(env):
-    args = env['args']
-    g = env['g']
-    c = env['c']
-    conn = env['conn']
-    tags = env['tags']
+    args, g, c = [env[k] for k in ('args', 'g', 'c')]
 
     if len(args) < 1:
         return await c.send('Please provide a tag.')
 
     tagname = args[0]
 
-    tag = db.fetch(tags, {'name': tagname, 'guild': g.id}, conn)
+    tag = db.fetch(tags, {'name': tagname, 'guild': g.id})
 
     if not tag:
         return await c.send('That tag doesn\'t exist in this server.')

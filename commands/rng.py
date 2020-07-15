@@ -12,8 +12,7 @@ no_docs = False
 arglength = 0
 
 async def run(env):
-    args = env['args']
-    c = env['c']
+    args, c = [env[k] for k in ('args', 'c')]
 
     if len(args) < 1:
         min = 0

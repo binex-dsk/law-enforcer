@@ -3,12 +3,12 @@ from constants.auth import prefix
 
 nl = '\n'
 escapedpref = f'\\{prefix}'
-info = '```Owner: literal monkey#9193\nOwner ID: 694643777146454096\n'\
+info = '```Owner: roach#2386\nOwner ID: 728694582086205550\n'\
 'Running on: 5.6.3-arch1-1 x86_64 64 bit\nProcessors: 4 × Intel Core i5-3210M '\
 'CPU @ 2.50GHz\nMemory: 7.7 GB{}```Join the official support server: '\
 'https://discord.gg/PVTBgK6 \nSee the code for yourself: '\
-'https://github.com/spergmoment/law-enforcer\nNOTE: The above '\
-'repository is an old, public version. The private, current version will be released eventually.'
+'https://github.com/binex-dsk/law-enforcer \nSupport is appreciated! Please use '\
+f'{escapedpref}contact to contact my creator!'
 
 def helpCmd(emb, cmd, desc, syntax, ex1, ex2, notes, names, reqperms):
     emb.title = cmd

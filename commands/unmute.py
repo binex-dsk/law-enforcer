@@ -1,5 +1,6 @@
 import discord
 from constants import checks, db
+from tables import muted_roles as roles, muted_members as mems
 
 name = 'unmute'
 names = ['unmute']
@@ -13,20 +14,14 @@ no_docs = False
 arglength = 1
 
 async def run(env):
-    args = env['args']
-    msg = env['msg']
-    g = env['g']
-    c = env['c']
-    m = env['m']
-    conn = env['conn']
-    roles = env['muted_roles']
+    args, msg, g, c, m = [env[k] for k in ('args', 'msg', 'g', 'c', 'm')]
 
     try:
         await checks.perms(['mute_members', 'kick_members', 'manage_roles'], g, c, m)
     except:
         return
 
-    result = db.fetch(roles, {'guild': g.id}, conn)
+    result = db.fetch(roles, {'guild': g.id})
     if not result:
         return await c.send('No muted role is set! Please set one with `setmuted`.')
 
@@ -50,6 +45,7 @@ async def run(env):
         return await c.send('This member is not muted.')
 
     await mem.remove_roles(muted_role, reason=reason)
+    db.delete(mems, {'id': mem.id, 'guild': g.id})
     await c.send(f'Successfully unmuted {mem}.\nReason: {reason}')
     try:
         await mem.send(f'You\'ve been unmuted in {g} by {m}.\nReason: {reason}')

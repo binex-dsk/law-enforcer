@@ -14,11 +14,7 @@ no_docs = False
 arglength = 1
 
 async def run(env):
-    args = env['args']
-    client = env['client']
-    g = env['g']
-    c = env['c']
-    m = env['m']
+    args, client, g, c, m = [env[k] for k in ('args', 'client', 'g', 'c', 'm')]
 
     try:
         await checks.perms(['ban_members'], g, c, m)

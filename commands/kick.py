@@ -14,11 +14,7 @@ no_docs = False
 arglength = 1
 
 async def run(env):
-    args = env['args']
-    msg = env['msg']
-    g = env['g']
-    c = env['c']
-    m = env['m']
+    args, msg, g, c, m = [env[k] for k in ('args', 'msg', 'g', 'c', 'm')]
 
     try:
         await checks.perms(['kick_members', 'create_instant_invite'], g, c, m)

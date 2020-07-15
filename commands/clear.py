@@ -12,10 +12,7 @@ no_docs = False
 arglength = 1
 
 async def run(env):
-    args = env['args']
-    g = env['g']
-    c = env['c']
-    m = env['m']
+    args, g, c, m = [env[k] for k in ('args', 'g', 'c', 'm')]
 
     try:
         await checks.perms(['manage_messages', 'read_message_history'], g, c, m)

@@ -1,5 +1,6 @@
 import discord
 from constants import db
+from tables import tags
 
 name = 'tags'
 names = ['tags', 'taglist']
@@ -14,15 +15,12 @@ no_docs = False
 arglength = 0
 
 async def run(env):
-    g = env['g']
-    c = env['c']
-    conn = env['conn']
-    tags = env['tags']
+    g, c = [env[k] for k in ('g', 'c')]
 
-    result = db.fetch(tags, {'guild': g.id}, conn)
+    result = db.fetch(tags, {'guild': g.id})
     if not result:
         return await c.send('No tags exist on this server.')
-    tags = ''
+    tags_str = ''
     fieldnum = 0
     emb = discord.Embed()
     emb.title = f'All tags in server {g}'
@@ -31,16 +29,16 @@ async def run(env):
     # basically gets all the tags and formats them to fit on an embed
     for row in result:
         print(row)
-        if len(tags) > 1000:
+        if len(tags_str) > 1000:
             if fieldnum == 0:
-                emb.add_field(name='Tags', value=tags, inline=False)
+                emb.add_field(name='Tags', value=tags_str, inline=False)
             else:
-                emb.add_field(name='Continued', value=tags, inline=False)
+                emb.add_field(name='Continued', value=tags_str, inline=False)
             fieldnum += 1
-            tags = ''
-        tags += f'{row.name}\n'
+            tags_str = ''
+        tags_str += f'{row.name}\n'
     if fieldnum == 0:
-        emb.add_field(name='Tags', value=tags, inline=False)
+        emb.add_field(name='Tags', value=tags_str, inline=False)
     else:
-        emb.add_field(name='Continued', value=tags, inline=False)
+        emb.add_field(name='Continued', value=tags_str, inline=False)
     await c.send(embed=emb)

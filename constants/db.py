@@ -1,17 +1,16 @@
 # pylint: disable=unused-variable
-def exists(table, values, conn): # I could do this way better but this works
+from tables import conn
+def exists(table, values): # I could do this way better but this works
     selection = table.select()
-    for i in range(len(values)):
-        key = list(values.keys())[i]
-        val = list(values.values())[i]
-        selection = selection.where(table.c[key] == val)
+    selection = (selection.where(table.c[list(values.keys())[i]] == list(values.values())[i]) for i in enumerate(values))
+
     result = conn.execute(selection)
     rowlen = 0
-    for row in result:
+    for _ in result:
         rowlen += 1
     return rowlen != 0
 
-def insert(table, values, conn):
+def insert(table, values):
     try:
         conn.execute(table.insert(), [
             values
@@ -19,40 +18,28 @@ def insert(table, values, conn):
     except:
         raise Exception('Table does not exist.')
 
-def delete(table, values, conn):
-    fetched = fetch(table, values, conn)
+def delete(table, values):
+    fetched = fetch(table, values)
     if not fetched:
         raise Exception('Row not found.')
 
     del_select = table.delete()
-    for i in range(len(values)):
-        key = list(values.keys())[i]
-        val = list(values.values())[i]
-        del_select = del_select.where(table.c[key] == val)
+    del_select = (del_select.where(table.c[list(values.keys())[i]] == list(values.values())[i]) for i in enumerate(values))
     return conn.execute(del_select)
 
-def fetch(table, values, conn):
-    if not exists(table, values, conn):
+def fetch(table, values):
+    if not exists(table, values):
         return None
     selection = table.select()
-    for i in range(len(values)):
-        key = list(values.keys())[i]
-        val = list(values.values())[i]
-        selection = selection.where(table.c[key] == val)
+    selection = (selection.where(table.c[list(values.keys())[i]] == list(values.values())[i]) for i in enumerate(values))
     return conn.execute(selection)
 
-def update(table, checkVals, newVals, conn):
-    fetched = fetch(table, checkVals, conn)
+def update(table, checkVals, newVals):
+    fetched = fetch(table, checkVals)
     if not fetched:
         raise Exception('Row not found.')
     upd = table.update()
-    for i in range(len(checkVals)):
-        key = list(checkVals.keys())[i]
-        val = list(checkVals.values())[i]
-        upd = upd.where(table.c[key] == val)
+    upd = (upd.where(table.c[list(checkVals.keys())[i]] == list(checkVals.values())[i]) for i in enumerate(checkVals))
 
-    for i in range(len(newVals)):
-        key = list(newVals.keys())[i]
-        val = list(newVals.values())[i]
-        upd = upd.values({key: val})
+    upd = (upd.values({table.c[list(newVals.keys())[i]]: list(newVals.values())[i]}) for i in enumerate(newVals))
     return conn.execute(upd)

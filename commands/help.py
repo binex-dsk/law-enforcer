@@ -11,9 +11,7 @@ no_docs = True
 arglength = 0
 
 async def run(env):
-    args = env['args']
-    client = env['client']
-    c = env['c']
+    args, client, c = [env[k] for k in ('args', 'client', 'c')]
 
     # initialize an embed
     helpEmb = discord.Embed()
@@ -34,13 +32,9 @@ async def run(env):
 
         helpEmb.description = 'This is a list of all groups and their commands.'
 
-        for group in list(filter(lambda x: isinstance(x, ModuleType), groups.values())):
-            # i could do this way better but im too lazy
+        [helpEmb.add_field(name=group.name, value=f'{group.description}\n`{"`, `".join(group.commands)}`', inline=False) for group in [x for x in groups.values() if isinstance(x, ModuleType)]]
 
-            helpEmb.add_field(name=group.name,
-            value=f'{group.description}\n`{"`, `".join(group.commands)}`', inline=False)
-
-        helpEmb.set_footer(text='Law Enforcer v1.0.1', icon_url=client.user.avatar_url)
+        helpEmb.set_footer(text='Law Enforcer v1.1.0', icon_url=client.user.avatar_url)
 
     elif cmd:
         if cmd.no_docs:

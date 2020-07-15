@@ -1,5 +1,6 @@
 from datetime import datetime
 from constants import checks, db
+from tables import tags
 
 name = 'addtag'
 names = ['addtag']
@@ -17,8 +18,7 @@ async def run(env):
     g = env['g']
     c = env['c']
     m = env['m']
-    conn = env['conn']
-    tags = env['tags']
+
     try:
         await checks.perms(['manage_guild'], g, c, m)
     except:
@@ -26,7 +26,7 @@ async def run(env):
 
     tagname = args[0]
 
-    if db.exists(tags, {'name': tagname}, conn):
+    if db.exists(tags, {'name': tagname}):
         return await c.send('That tag is already in the server.')
 
     tagcont = ' '.join(args[1:len(args)])
@@ -37,7 +37,7 @@ async def run(env):
         db.insert(tags,
             {'name': tagname, 'content': tagcont, 'creatortag': str(m),
             'creatorid': m.id, 'createdat': f'{now.month}/{now.day}/{now.year}, '\
-            f'at {now.hour}:{now.minute}', 'guild': g.id}, conn)
+            f'at {now.hour}:{now.minute}', 'guild': g.id})
         return await c.send(f'Successfully added tag {tagname}, with content:\n{tagcont}')
     except Exception as e:
         await c.send(f'Error while adding tag:\n{e}')

@@ -12,10 +12,7 @@ no_docs = False
 arglength = 1
 
 async def run(env):
-    args = env['args']
-    client = env['client']
-    c = env['c']
-    m = env['m']
+    args, client, c, m = [env[k] for k in ('args', 'client', 'c', 'm')]
 
     message = ' '.join(args)
     owner = client.get_user(main_owner)

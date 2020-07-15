@@ -12,11 +12,7 @@ no_docs = False
 arglength = 1
 
 async def run(env):
-    args = env['args']
-    msg = env['msg']
-    g = env['g']
-    c = env['c']
-    m = env['m']
+    args, msg, g, c, m = [env[k] for k in ('args', 'msg', 'g', 'c', 'm')]
 
     try:
         await checks.perms(['ban_members'], g, c, m)
@@ -29,8 +25,9 @@ async def run(env):
 
     member = msg.mentions[0]
 
-    check2 = await checks.roles(m, member, g, c)
-    if not check2:
+    try:
+        await checks.roles(m, member, g, c)
+    except:
         return
 
     reason = ' '.join(args[1:len(args)]) or 'None'

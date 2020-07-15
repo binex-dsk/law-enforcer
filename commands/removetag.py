@@ -1,4 +1,5 @@
 from constants import checks, db
+from tables import tags
 
 name = 'removetag'
 names = ['removetag', 'deletetag', 'deltag']
@@ -12,13 +13,7 @@ no_docs = False
 arglength = 1
 
 async def run(env):
-    args = env['args']
-    client = env['client']
-    g = env['g']
-    c = env['c']
-    m = env['m']
-    conn = env['conn']
-    tags = env['tags']
+    args, client, g, c, m = [env[k] for k in ('args', 'client', 'g', 'c', 'm')]
 
     try:
         await checks.perms(['manage_guild'], g, c, m)
@@ -28,7 +23,7 @@ async def run(env):
     if len(args) < 1:
         return await c.send('Please provide a tag name.')
 
-    result = db.fetch(tags, {'guild': g.id, 'name': args[0]}, conn)
+    result = db.fetch(tags, {'guild': g.id, 'name': args[0]})
     if not result:
         return await c.send('That tag does not exist in this server.')
 
@@ -41,7 +36,7 @@ async def run(env):
     if res.content == 'n':
         return await c.send('Command cancelled by user.')
     try:
-        db.delete(tags, {'guild': g.id, 'name': args[0]}, conn)
+        db.delete(tags, {'guild': g.id, 'name': args[0]})
         return await c.send(f'Successfully deleted tag {args[0]}.')
     except Exception as e:
         await c.send(f'Error while deleting tag:\n{e}')

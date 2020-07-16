@@ -98,7 +98,7 @@ async def on_member_join(m):
     #db.insert(server_config, {'guild': m.guild.id})
     mgc = db.fetch(server_config, {'guild': m.guild.id}).fetchone()
     if mgc.mute_evasion:
-        muted = muted_members.select().where(muted_members.c.unmute_after <= int(time.time())).where(muted_members.c.id == m.id)
+        muted = muted_members.select().where(muted_members.c.unmute_after <= int(time.time())).where(muted_members.c.id == m.id).fetchone()
 
         if muted:
             await m.add_roles(db.fetch(muted_roles, {'guild': m.guild.id}), f'Mute evasion; added {mgc.mute_evasion_time} hours to mute time.')

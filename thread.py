@@ -2,7 +2,7 @@ import time
 from datetime import timedelta
 from timeloop import Timeloop
 import db
-from tables import muted_members, muted_roles, conn
+from tables import muted_members, muted_roles, conn, server_config
 
 timer = Timeloop()
 

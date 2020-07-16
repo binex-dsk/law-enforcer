@@ -1,10 +1,10 @@
 import datetime, calendar, discord
 from constants import checks, db
-from tables import muted_roles as roles, muted_members as mems
+from tables import muted_roles as roles, muted_members as mems, server_config
 
 name = 'mute'
 names = ['mute']
-long = 'Mute a user for a certain amount of time'
+long = 'Mute a user for a certain amount of time.'
 syntax = '(user) (time) (reason || none)'
 ex1 = 'id1 24 stop spamming'
 ex2 = 'id2 0.5'
@@ -20,6 +20,7 @@ def get_future(hrs):
 async def run(env):
     args, msg, g, c, m = [env[k] for k in ('args', 'msg', 'g', 'c', 'm')]
 
+    conf = db.fetch(server_config, {'guild': g.id}).fetchone()
     try:
         await checks.perms(['mute_members', 'kick_members', 'manage_roles'], g, c, m)
     except:
@@ -63,9 +64,10 @@ async def run(env):
         await mem.add_roles(muted_role, reason=reason)
         db.insert(mems, {'id': mem.id, 'guild': g.id, 'unmute_after': get_future(time)})
         await c.send(f'Successfully muted {mem} for {time} hours. Reason: {reason}')
-        try:
-            await mem.send(f'You\'ve been muted in {g} by {m} for {time} hours.\nReason: {reason}')
-        except:
-            pass
+        if conf.mute_dm:
+            try:
+                await mem.send(conf.mute_dm_message.format(MEM=mem, GUILD=g, MOD=m, TIME=time, REASON=reason))
+            except:
+                pass
     except Exception as e:
         await c.send(f'Error while muting member: {e}')

@@ -1,4 +1,6 @@
 from constants import checks
+from tables import server_config
+import constants.db as db
 
 name = 'ban'
 names = ['ban', 'snipe']
@@ -14,6 +16,7 @@ arglength = 1
 async def run(env):
     args, msg, g, c, m = [env[k] for k in ('args', 'msg', 'g', 'c', 'm')]
 
+    conf = db.fetch(server_config, {'guild': g.id}).fetchone()
     try:
         await checks.perms(['ban_members'], g, c, m)
     except:
@@ -33,14 +36,14 @@ async def run(env):
     reason = ' '.join(args[1:len(args)]) or 'None'
 
     try:
-        # try to tell the member they've been banned
-        try:
-            await member.send(f'{member}, you have been **banned** '\
-            f'from {g} by {m}.\nReason: {reason}')
-        # if it doesn't work, ignore it and move on
-        except:
-            pass
-        await member.ban(reason=reason)
+        if conf.ban_dm:
+            try:
+                
+                await member.send(conf.ban_dm_message.format(MEM=member, GUILD=g, MOD=m, REASON=reason))
+            # if it doesn't work, ignore it and move on
+            except:
+                pass
+        await member.ban(reason=reason, delete_message_days=conf.ban_delete_days)
         await c.send(f'{m}, I have **banned** {member}.\nReason: {reason}')
     # if any error occurs, catch it and send it
     except Exception as e:

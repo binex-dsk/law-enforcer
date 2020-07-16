@@ -9,7 +9,7 @@ import discord
 
 from constants.auth import token, prefix, game
 from constants import db
-from tables import conn, tags, muted_roles, muted_members
+from tables import muted_roles, muted_members, server_config, tags
 
 client = discord.Client()
 
@@ -17,6 +17,8 @@ start_time = 0
 
 @client.event
 async def on_ready():
+    #for g in client.guilds:
+       # db.insert(server_config, {'guild': g.id})
     global start_time
     # used for uptime
     start_time = datetime.now()
@@ -30,6 +32,24 @@ async def on_message(msg):
     # ignore bots
     if msg.author.bot:
         return
+    
+    # extremely inefficient system but idgaf
+    tagss = db.fetch(tags, {'guild': msg.guild.id})
+    if tagss:
+        conf = db.fetch(server_config, {'guild': msg.guild.id}).fetchone()
+        tagls = tagss.fetchall()
+        if not conf.tag_require_command:
+            if conf.tag_search_all:
+                found = [x.content for x in [x for x in tagls if msg.content.find(x.name) != -1]]
+
+                if len(found) > 0:
+                    return await msg.channel.send(found[0])
+            else:
+                found = [x.content for x in [x for x in tagls if msg.content == x.name]]
+
+                if len(found) > 0:
+                    return await msg.channel.send(found[0])
+            
 
     # ignore messages not starting with our prefix
     if not msg.content.startswith(prefix):
@@ -75,16 +95,19 @@ async def on_message(msg):
 # to prevent mute evasion!
 @client.event
 async def on_member_join(m):
-    muted = muted_members.select().where(muted_members.c.unmute_after <= int(time.time())).where(muted_members.c.id == m.id)
+    #db.insert(server_config, {'guild': m.guild.id})
+    mgc = db.fetch(server_config, {'guild': m.guild.id}).fetchone()
+    if mgc.mute_evasion:
+        muted = muted_members.select().where(muted_members.c.unmute_after <= int(time.time())).where(muted_members.c.id == m.id)
 
-    if muted:
-        await m.add_roles(db.fetch(muted_roles, {'guild': m.guild.id}), 'Mute evasion; added 12 hours to mute time.')
-        db.update(muted_members, {'id': m.id}, {'unmute_after': calendar.timegm((muted.unmute_after + timedelta(hours=12).timetuple()))})
-        try:
-            await m.send(f'Nice try mute evading in {m.guild}. Sorry, but your mute time has been extended by 12 hours. If you believe this is in error, please contact the admins/mods of the server.')
-        except:
-            pass
-    
+        if muted:
+            await m.add_roles(db.fetch(muted_roles, {'guild': m.guild.id}), f'Mute evasion; added {mgc.mute_evasion_time} hours to mute time.')
+            db.update(muted_members, {'id': m.id}, {'unmute_after': calendar.timegm((muted.unmute_after + timedelta(hours=mgc.mute_evasion_time).timetuple()))})
+            try:
+                await m.send(f'Looks like you were mute evading in {m.guild}.\nYour mute time has been extended by 12 hours. If you believe this is in error, please contact the admins/mods of the server.')
+            except:
+                pass
+
 # tries to login with the token
 try:
     client.run(token)

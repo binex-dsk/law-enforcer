@@ -1,4 +1,6 @@
 from constants import checks
+from tables import server_config
+import constants.db as db
 
 name = 'kick'
 names = ['kick', 'softban']
@@ -16,6 +18,7 @@ arglength = 1
 async def run(env):
     args, msg, g, c, m = [env[k] for k in ('args', 'msg', 'g', 'c', 'm')]
 
+    conf = db.fetch(server_config, {'guild': g.id}).fetchone()
     try:
         await checks.perms(['kick_members', 'create_instant_invite'], g, c, m)
     except:
@@ -33,14 +36,17 @@ async def run(env):
 
     reason = ' '.join(args[1:len(args)]) or 'None'
     inv = await c.create_invite(reason=f'Temporary invite for {member}', max_uses=1)
-
+    if conf.kick_dm_invite:
+        kick_dm_inv_message = conf.kick_dm_inv_message.format(INV=inv)
+    else:
+        kick_dm_inv_message = None
+    to_dm = conf.kick_dm_message.format(MEM=member, GUILD=g, MOD=m, REASON=reason, INV=kick_dm_inv_message)
     try:
-        try:
-            await member.send(f'{member}, you have been **kicked** '\
-            f'from {g} by {m}.\nReason: {reason}\n'\
-            f'I have created a one-time invite for you to join back with: {inv}')
-        except:
-            pass
+        if conf.kick_dm:
+            try:
+                await member.send(to_dm)
+            except:
+                pass
         await member.kick(reason=reason)
         await c.send(f'{m}, I have **kicked** {member}.\nReason: {reason}')
     except Exception as e:

@@ -1,6 +1,6 @@
 from datetime import datetime
 from constants import checks, db
-from tables import tags
+from tables import tags, server_config
 
 name = 'addtag'
 names = ['addtag']
@@ -8,21 +8,20 @@ long = 'Add a tag to the server.'
 syntax = '(tag name)'
 ex1 = 'example Some tag'
 ex2 = 'test Test tag'
-notes = 'Access tags with the `tag` command, or their info with the `taginfo` command.'
+notes = 'Access tags with the `tag` command, or their info with the `taginfo` command.\nSome servers may allow anyone to add tags.'
 reqperms = '`manage guild`'
 no_docs = False
 arglength = 2
 
 async def run(env):
-    args = env['args']
-    g = env['g']
-    c = env['c']
-    m = env['m']
+    args, g, c, m = [env[k] for k in ('args', 'g', 'c', 'm')]
 
-    try:
-        await checks.perms(['manage_guild'], g, c, m)
-    except:
-        return
+    conf = db.fetch(server_config, {'guild': g.id}).fetchone()
+    if not conf.allow_all_addtag:
+        try:
+            await checks.perms(['manage_guild'], g, c, m)
+        except:
+            return
 
     tagname = args[0]
 

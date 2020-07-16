@@ -1,5 +1,5 @@
 import sys
-from constants import checks
+import constants.checks as checks
 
 names = ['restart', 'reset', 'update']
 no_docs = True

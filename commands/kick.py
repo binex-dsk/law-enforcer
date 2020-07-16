@@ -1,6 +1,5 @@
-from constants import checks
+from constants import checks, db
 from tables import server_config
-import constants.db as db
 
 name = 'kick'
 names = ['kick', 'softban']

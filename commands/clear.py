@@ -1,6 +1,5 @@
-from constants import checks
+from constants import checks, db
 from tables import server_config
-import constants.db as db
 
 name = 'clear'
 names = ['clear', 'purge']
@@ -32,12 +31,12 @@ async def run(env):
         # deletes the messages. it's +1 to handle the original message
         # discord.py purge actually can support over 100, unlike d.js and the api
         # it uses separate calls for >100 values
-        
+
         if conf.clear_delete_pinned:
             await c.purge(limit=amt+1)
         else:
             pins = await c.pins()
-            await c.purge(limit=amt+1, check=lambda x:x not in pins)
+            await c.purge(limit=amt+1, check=lambda x: x not in pins)
         message = await c.send(f'Successfully cleared {amt} messages.')
 
         # delete the sent message after 3 secs

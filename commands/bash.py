@@ -1,5 +1,5 @@
 import os
-from constants import checks
+import constants.checks as checks
 
 names = ['bash']
 no_docs = True

@@ -1,6 +1,6 @@
 import random
 from constants.auth import ids
-from constants import checks
+import constants.checks as checks
 
 name = 'unban'
 names = ['unban', 'unsnipe']

@@ -1,6 +1,6 @@
 # pylint: disable=unused-variable
 import random, ast, discord
-from constants import checks
+import constants.checks as checks
 
 names = ['eval']
 no_docs = True

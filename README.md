@@ -1,5 +1,5 @@
 # Law Enforcer: Stable Branch
-The repository for my currently WIP bot, Law Enforcer.
+The stable, fully tested and working code for the bot. Might come out as its own bot later.
 
 Current version: 1.0
 

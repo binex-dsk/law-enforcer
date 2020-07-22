@@ -1,5 +1,5 @@
 # Law Enforcer: Master Branch
-The repository for my currently WIP bot, Law Enforcer.
+The source code and some info related to my discord bot project Law Enforcer. This is the up-to-date version and is what is actually running.
 
 Current version: 1.2.1
 

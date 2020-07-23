@@ -1,6 +1,6 @@
 from sqlalchemy import Table, Column, Integer, String, Boolean, MetaData, create_engine
 
-engine = create_engine('sqlite:///database.db')
+engine = create_engine('sqlite:///database.db', connect_args={'check_same_thread': False})
 meta = MetaData()
 conn = engine.connect()
 tags = Table(

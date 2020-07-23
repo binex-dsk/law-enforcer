@@ -4,7 +4,7 @@ from types import ModuleType
 import calendar, time
 from datetime import datetime, timedelta
 
-import thread
+from thread import Thread
 import discord
 
 from constants.auth import token, prefix, game
@@ -25,14 +25,14 @@ async def on_ready():
 
     await client.change_presence(status=discord.Status.online, activity=discord.Game(game))
     print('Successfully logged in.')
-    await thread.checkMutes(client)
+    Thread.start(client, block=False)
 
 @client.event
 async def on_message(msg):
     # ignore bots
     if msg.author.bot:
         return
-    
+
     # extremely inefficient system but idgaf
     tagss = db.fetch(tags, {'guild': msg.guild.id})
     if tagss:
@@ -49,7 +49,7 @@ async def on_message(msg):
 
                 if len(found) > 0:
                     return await msg.channel.send(found[0])
-            
+
 
     # ignore messages not starting with our prefix
     if not msg.content.startswith(prefix):
@@ -104,7 +104,7 @@ async def on_member_join(m):
             await m.add_roles(db.fetch(muted_roles, {'guild': m.guild.id}), f'Mute evasion; added {mgc.mute_evasion_time} hours to mute time.')
             db.update(muted_members, {'id': m.id}, {'unmute_after': calendar.timegm((muted.unmute_after + timedelta(hours=mgc.mute_evasion_time).timetuple()))})
             try:
-                await m.send(f'Looks like you were mute evading in {m.guild}.\nYour mute time has been extended by 12 hours. If you believe this is in error, please contact the admins/mods of the server.')
+                await m.send(f'Looks like you were mute evading in {m.guild}.\nYour mute time has been extended by {mgc.mute_evasion_time} hours. If you believe this is in error, please contact the admins/mods of the server.')
             except:
                 pass
 

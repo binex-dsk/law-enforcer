@@ -10,6 +10,7 @@ checkTime = 5
 client = None
 
 class Thread():
+    """Thread class to manage the mute timers."""
     @staticmethod
     def start(cli, block=False):
         global client
@@ -27,6 +28,7 @@ class Thread():
             print(e)
 
 async def search():
+    """Searches through muted members and unmutes them if their mute time is up."""
     global client
     mems = conn.execute(muted_members.select().where(muted_members.c.unmute_after <= int(time.time()))).fetchall()
 
@@ -41,4 +43,5 @@ async def search():
 
 @timer.job(interval=timedelta(seconds=checkTime))
 def checkMutes():
+    """Timer to start the search function."""
     asyncio.run(search())

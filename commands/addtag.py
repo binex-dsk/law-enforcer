@@ -25,7 +25,7 @@ async def run(env):
 
     tagname = args[0]
 
-    if db.exists(tags, {'name': tagname}):
+    if db.exists(tags, {'name': tagname, 'guild': g.id}):
         return await c.send('That tag is already in the server.')
 
     tagcont = ' '.join(args[1:len(args)])

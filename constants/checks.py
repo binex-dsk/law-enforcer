@@ -1,6 +1,7 @@
 from constants.auth import ids
 
 async def perms(perms, g, c, m):
+    """Checks permissions of the bot and the member."""
     for perm in perms:
         if not dict(g.me.guild_permissions).get(perm):
             await c.send(f'I must have the `{perm.upper()}` permission to do this.')
@@ -11,12 +12,14 @@ async def perms(perms, g, c, m):
     return True
 
 async def owner(c, m):
+    """Checks if the user is a bot owner."""
     if not m.id in ids:
         await c.send('You must be an owner to use this command.')
         raise Exception()
     return True
 
 async def roles(auth, mem, g, c):
+    """Checks role positions."""
     if g.me.top_role < mem.top_role:
         await c.send('I am at a lower level on the role hierarchy than this member.')
     elif auth.top_role < mem.top_role:

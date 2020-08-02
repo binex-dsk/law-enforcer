@@ -11,6 +11,7 @@ info = '```Owner: roach#2386\nOwner ID: 728694582086205550\n'\
 f'{escapedpref}contact to contact my creator!'
 
 def helpCmd(emb, cmd, desc, syntax, ex1, ex2, notes, names, reqperms):
+    """Helper function to construct a help page."""
     emb.title = cmd
     emb.description = desc
     emb.add_field(name='Usage', value=f'\\{prefix}{cmd} {syntax}', inline=False)

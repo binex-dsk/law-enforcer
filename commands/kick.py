@@ -8,8 +8,7 @@ syntax = '(user) (reason || none)'
 ex1 = 'id1 don\'t do that again'
 ex2 = 'id2'
 notes = 'The user is DMed upon being kicked. Additionally, '\
-'they are given a one-time invite to rejoin with.'\
-'\nIn later versions, there will be options to disable this.'
+'by default, they are given a one-time invite to rejoin with.'
 reqperms = '`kick members`\n`create instant invite`'
 no_docs = False
 arglength = 1

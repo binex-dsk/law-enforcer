@@ -1,6 +1,8 @@
+from types import ModuleType
+from commands import __dict__ as cmds
 import discord
 from tables import server_config
-import constants.db as db
+from constants import db
 
 name = 'config'
 names = ['config', 'serverconfig']
@@ -13,6 +15,8 @@ reqperms = '`administrator`'
 no_docs = False
 arglength = 0
 
+def gval(to_upd, opt, row):
+    return f"{to_upd.get(row)}" if f"{to_upd.get(row)}" != "None" else f"{opt[row]}"
 
 async def awaitmsg(client, m, contents):
     cfm = await client.wait_for('message', check=lambda x: x.author.id == m.id and x.content.lower() in contents)
@@ -56,12 +60,10 @@ async def tf_base(conf_emb, emb, name, sub, msg, val, opt, client, m, to_upd):
     cfm = await awaitmsg(client, m, ['true', 'false'])
 
     cc = cfm.content.lower()
-
     if cc == 'true':
         to_upd.update({val: True})
     else:
         to_upd.update({val: False})
-
 
 async def subst_base(conf_emb, emb, name, sub, msg, val, subst, opt, client, m, to_upd):
     setbase(conf_emb, f'{name} -- {sub}',
@@ -78,37 +80,45 @@ async def subst_base(conf_emb, emb, name, sub, msg, val, subst, opt, client, m, 
     to_upd.update({val: cc})
 
 
-async def ban(client, m, emb, conf_emb, opt, to_upd):
-    setbase(conf_emb, 'Ban Configuration',
+async def ban(client, m, emb, conf_emb, opt, to_upd, un=False):
+    lst = ['dm', 'message', 'back']
+    if un:
+        mt = "Unban"
+    else:
+        mt = "Ban"
+        lst.append('deletion')
+    mtl = mt.lower()
+
+    setbase(conf_emb, f'{mt} Configuration',
             'Configure the following options.\nSyntax: OptionName (OptionMessage)\nType the OptionMessage to configure.')
-    addfield(conf_emb, 'Message Deletion Days (deletion)', to_upd.get('ban_delete_days') or opt.ban_delete_days)
-    addfield(conf_emb, 'DM User upon ban? (dm)', f"{to_upd.get('ban_dm')}" or opt.ban_dm)
-    addfield(conf_emb, 'DM Message, I/A (message)', to_upd.get('ban_dm_message') or opt.ban_dm_message)
+    if not un:
+        addfield(conf_emb, 'Message Deletion Days (deletion)', gval(to_upd, opt, 'ban_delete_days'))
+    addfield(conf_emb, f'DM User upon {mtl}? (dm)', gval(to_upd, opt, f'{mtl}_dm'))
+    addfield(conf_emb, 'DM Message, I/A (message)', gval(to_upd, opt, f'{mtl}_dm_message'))
 
     await emb.edit(embed=conf_emb)
-    cfm = await awaitmsg(client, m, ['deletion', 'dm', 'message', 'back'])
+    cfm = await awaitmsg(client, m, lst)
 
     cc = cfm.content.lower()
 
     if cc == 'deletion':
         await int_base(conf_emb, emb, 'Ban Command', 'Message Deletion Days', 'How many days of messages will be deleted when a user is banned?', 0, 7, client, to_upd, opt, 'ban_delete_days', m)
     elif cc == 'dm':
-        await tf_base(conf_emb, emb, 'Ban Command', 'DM User', 'Should the user be DMed upon ban?', 'ban_dm', opt, client, m, to_upd)
+        await tf_base(conf_emb, emb, f'{mt} Command', 'DM User', f'Should the user be DMed upon {mtl}?', f'{mtl}_dm', opt, client, m, to_upd)
     elif cc == 'message':
-        await subst_base(conf_emb, emb, 'Ban Command', 'DM Message', 'What message should be sent to the user upon being banned?', 'ban_dm_message', '\{MEM}: member being banned\n\{GUILD}: server name\n\{MOD}: responsible moderator\n\{REASON}: reason for ban', opt, client, m, to_upd)
+        await subst_base(conf_emb, emb, f'{mt} Command', 'DM Message', f'What message should be sent to the user upon being {mtl}ned?', f'{mtl}_dm_message', '{MEM}: member being {mtl}ned\n{GUILD}: server name\n{MOD}: responsible moderator\n{REASON}: reason for {mtl}'.format(MEM='\{MEM}', mtl=mtl, GUILD='\{GUILD}', MOD='\{MOD}', REASON='\{REASON}'), opt, client, m, to_upd)
     else:
-        await commands(client, m, emb, conf_emb, opt, to_upd)
-    await ban(client, m, emb, conf_emb, opt, to_upd)
+        return await commands(client, m, emb, conf_emb, opt, to_upd)
+    await ban(client, m, emb, conf_emb, opt, to_upd, un=un)
 
 
 async def kick(client, m, emb, conf_emb, opt, to_upd):
     setbase(conf_emb, 'Kick Configuration',
             'Configure the following options.\nSyntax: OptionName (OptionMessage)\nType the OptionMessage to configure.')
-    addfield(conf_emb, 'DM User upon kick? (dm)', f"{to_upd.get('kick_dm')}" or opt.kick_dm)
-    addfield(conf_emb, 'DM Message, I/A (message)', to_upd.get('kick_dm_message') or opt.kick_dm_message)
-    addfield(conf_emb, 'DM User an invite, I/A? (inv)', f"{to_upd.get('kick_dm_invite')}" or opt.kick_dm_invite)
-    addfield(conf_emb, 'DM Invite Message, I/A (invitemessage)',
-             to_upd.get('kick_dm_inv_message') or opt.kick_dm_inv_message)
+    addfield(conf_emb, 'DM User upon kick? (dm)', gval(to_upd, opt, 'kick_dm'))
+    addfield(conf_emb, 'DM Message, I/A (message)', gval(to_upd, opt, 'kick_dm_message'))
+    addfield(conf_emb, 'DM User an invite, I/A? (inv)', gval(to_upd, opt, 'kick_dm_invite'))
+    addfield(conf_emb, 'DM Invite Message, I/A (invitemessage)', gval(to_upd, opt, 'kick_dm_inv_message'))
 
     await emb.edit(embed=conf_emb)
     cfm = await awaitmsg(client, m, ['dm', 'message', 'inv', 'invitemessage', 'back'])
@@ -124,15 +134,24 @@ async def kick(client, m, emb, conf_emb, opt, to_upd):
     elif cc == 'invitemessage':
         await subst_base(conf_emb, emb, 'Kick Command', 'DM Invite Message', 'What message should be sent with the invite to the user being kicked (I/A)?', 'kick_dm_inv_message', '\{INV}: invite', opt, client, m, to_upd)
     else:
-        await commands(client, m, emb, conf_emb, opt, to_upd)
+        return await commands(client, m, emb, conf_emb, opt, to_upd)
     await kick(client, m, emb, conf_emb, opt, to_upd)
 
 
-async def mute(client, m, emb, conf_emb, opt, to_upd):
-    setbase(conf_emb, 'Mute Configuration',
+async def mute(client, m, emb, conf_emb, opt, to_upd, un=False):
+    subs = '\{MEM}: member being muted\n\{GUILD}: server name\n\{MOD}: responsible moderator\n'
+    if un:
+        mt = "Unmute"
+    else:
+        mt = "Mute"
+        subs += '\{TIME}: time in hours of mute\n'
+    mtl = mt.lower()
+    subs += '\{REASON}: reason for mute'
+
+    setbase(conf_emb, f'{mt} Configuration',
             'Configure the following options.\nSyntax: OptionName (OptionMessage)\nType the OptionMessage to configure.')
-    addfield(conf_emb, 'DM User upon mute? (dm)', f"{to_upd.get('mute_dm')}" or opt.mute_dm)
-    addfield(conf_emb, 'DM Message, I/A (message)', to_upd.get('mute_dm_message') or opt.mute_dm_message)
+    addfield(conf_emb, 'DM User upon mute? (dm)', gval(to_upd, opt, f'{mtl}_dm'))
+    addfield(conf_emb, 'DM Message, I/A (message)', gval(to_upd, opt, f'{mtl}_dm_message'))
 
     await emb.edit(embed=conf_emb)
     cfm = await awaitmsg(client, m, ['dm', 'message', 'back'])
@@ -140,21 +159,19 @@ async def mute(client, m, emb, conf_emb, opt, to_upd):
     cc = cfm.content.lower()
 
     if cc == 'dm':
-        await tf_base(conf_emb, emb, 'Mute Command', 'DM User', 'Should the user be DMed upon mute?', 'mute_dm', opt, client, m, to_upd)
+        await tf_base(conf_emb, emb, f'{mt} Command', 'DM User', 'Should the user be DMed upon {mtl}?', f'{mtl}_dm', opt, client, m, to_upd)
     elif cc == 'message':
-        await subst_base(conf_emb, emb, 'Mute Command', 'DM Message', 'What message should be sent to the user upon being kicked?', 'mute_dm_message', '\{MEM}: member being banned\n\{GUILD}: server name\n\{MOD}: responsible moderator\n\{TIME}: time in hours of mute\n\{REASON}: reason for mute', opt, client, m, to_upd)
+        await subst_base(conf_emb, emb, f'{mt} Command', 'DM Message', f'What message should be sent to the user upon being {mtl}d?', f'{mtl}_dm_message', subs, opt, client, m, to_upd)
     else:
-        await commands(client, m, emb, conf_emb, opt, to_upd)
-    await mute(client, m, emb, conf_emb, opt, to_upd)
-
+        return await commands(client, m, emb, conf_emb, opt, to_upd)
+    await mute(client, m, emb, conf_emb, opt, to_upd, un=un)
 
 async def tags(client, m, emb, conf_emb, opt, to_upd):
     setbase(conf_emb, 'Tags Configuration',
             'Configure the following options.\nSyntax: OptionName (OptionMessage)\nType the OptionMessage to configure.')
-    addfield(conf_emb, 'Require command to activate? (reqcmd)',
-             opt.tag_require_command)
-    addfield(conf_emb, 'Search the whole message? (search)', f"{to_upd.get('tag_search_all')}" or opt.tag_search_all)
-    addfield(conf_emb, 'Allow all to use addtag? (allow)', f"{to_upd.get('allow_all_addtag')}" or opt.allow_all_addtag)
+    addfield(conf_emb, 'Require command to activate? (reqcmd)', gval(to_upd, opt, 'tag_require_command'))
+    addfield(conf_emb, 'Search the whole message? (search)', gval(to_upd, opt, 'tag_search_all'))
+    addfield(conf_emb, 'Allow all to use addtag? (allow)', gval(to_upd, opt, 'allow_all_addtag'))
 
     await emb.edit(embed=conf_emb)
     cfm = await awaitmsg(client, m, ['reqcmd', 'search', 'allow', 'back'])
@@ -168,15 +185,14 @@ async def tags(client, m, emb, conf_emb, opt, to_upd):
     elif cc == 'allow':
         await tf_base(conf_emb, emb, 'Tag Command', 'Allow All to use Addtag', 'Should ALL members be allowed to use `~~addtag`?', 'allow_all_addtag', opt, client, m, to_upd)
     else:
-        await commands(client, m, emb, conf_emb, opt, to_upd)
+        return await commands(client, m, emb, conf_emb, opt, to_upd)
     await tags(client, m, emb, conf_emb, opt, to_upd)
 
 
 async def clear(client, m, emb, conf_emb, opt, to_upd):
     setbase(conf_emb, 'Clear Configuration',
             'Configure the following options.\nSyntax: OptionName (OptionMessage)\nType the OptionMessage to configure.')
-    addfield(conf_emb, 'Delete pinned messages? (delpins)',
-             f"{to_upd.get('clear_delete_pinned')}" or opt.clear_delete_pinned)
+    addfield(conf_emb, 'Delete pinned messages? (delpins)', gval(to_upd, opt, 'clear_delete_pinned'))
 
     await emb.edit(embed=conf_emb)
     cfm = await awaitmsg(client, m, ['delpins', 'back'])
@@ -186,7 +202,7 @@ async def clear(client, m, emb, conf_emb, opt, to_upd):
     if cc == 'delpins':
         await tf_base(conf_emb, emb, 'Clear Command', 'Delete Pins', 'Should pinned messages be deleted?', 'clear_delete_pinned', opt, client, m, to_upd)
     else:
-        await commands(client, m, emb, conf_emb, opt, to_upd)
+        return await commands(client, m, emb, conf_emb, opt, to_upd)
     await clear(client, m, emb, conf_emb, opt, to_upd)
 
 
@@ -212,12 +228,13 @@ async def main(client, m, emb, conf_emb, opt, to_upd):
 async def others(client, m, emb, conf_emb, opt, to_upd):
     setbase(conf_emb, 'Other Configuration',
             'Configure other settings.\nSyntax: OptionName (OptionMessage)\nType the OptionMessage to configure.')
-    addfield(conf_emb, 'Enable Mute Evasion? (muteev)', f"{to_upd.get('mute_evasion')}" or opt.mute_evasion)
-    addfield(conf_emb, 'Mute Evasion Timeout (mutetime)', to_upd.get('mute_evasion_time') or opt.mute_evasion_time)
+    addfield(conf_emb, 'Punish Mute Evasion? (muteev)', gval(to_upd, opt, 'mute_evasion'))
+    addfield(conf_emb, 'Mute Evasion Timeout (mutetime)', gval(to_upd, opt, 'mute_evasion_time'))
+    addfield(conf_emb, 'Disabled Commands (disabled)', gval(to_upd, opt, 'disabled_cmds') or 'None')
 
     await emb.edit(embed=conf_emb)
 
-    cfm = await awaitmsg(client, m, ['muteev', 'mutetime', 'back'])
+    cfm = await awaitmsg(client, m, ['muteev', 'mutetime', 'disabled', 'back'])
 
     cc = cfm.content.lower()
 
@@ -225,26 +242,49 @@ async def others(client, m, emb, conf_emb, opt, to_upd):
         await tf_base(conf_emb, emb, 'Other Configuration', 'Mute Evasion', 'Should mute evasion be punished?', 'mute_evasion', opt, client, m, to_upd)
     elif cc == 'mutetime':
         await int_base(conf_emb, emb, 'Other Configuration', 'Mute Evasion Timeout', 'How many extra hours should be added to mute duration for mute evaders?', 1, 24, client, to_upd, opt, 'mute_evasion_time', m)
+    elif cc == 'disabled':
+        setbase(conf_emb, 'Disabled Commands',
+            f'What commands do you want to disable?\nCurrent value: ```{opt.disabled_cmds or None}```\nPlease type commands to disable in a space-separated format. Use `~~help` in another channel to view available commands.')
+
+        await emb.edit(embed=conf_emb)
+
+        cfm = await client.wait_for('message', check=lambda x: x.author.id == m.id)
+
+        await cfm.delete()
+
+        cc = cfm.content
+
+        cs = cc.split()
+        for [s, ss] in enumerate(cs):
+            if f'commands.{ss}' not in [x.__name__ for x in list(cmds.values()) if isinstance(x, ModuleType)]:
+                del cs[s]
+
+        to_upd.update({'disabled_cmds': ' '.join(cs)})
     else:
-        await main(client, m, emb, conf_emb, opt, to_upd)
+        return await main(client, m, emb, conf_emb, opt, to_upd)
+    await others(client, m, emb, conf_emb, opt, to_upd)
 
 
 async def commands(client, m, emb, conf_emb, opt, to_upd):
     setbase(conf_emb, 'Command Configuration',
-            'Configure individual command settings.\nCommands:\nBan\nKick\nMute\nTags\nClear')
+            'Configure individual command settings.\nCommands:\nBan\nUnban\nKick\nMute\nUnmute\nTags\nClear')
 
     await emb.edit(embed=conf_emb)
 
-    cfm = await awaitmsg(client, m, ['ban', 'kick', 'mute', 'tags', 'clear', 'back'])
+    cfm = await awaitmsg(client, m, ['ban', 'unban', 'kick', 'mute', 'unmute', 'tags', 'clear', 'back'])
 
     cc = cfm.content.lower()
 
     if cc == 'ban':
         await ban(client, m, emb, conf_emb, opt, to_upd)
+    if cc == 'unban':
+        await ban(client, m, emb, conf_emb, opt, to_upd, un=True)
     if cc == 'kick':
         await kick(client, m, emb, conf_emb, opt, to_upd)
     if cc == 'mute':
         await mute(client, m, emb, conf_emb, opt, to_upd)
+    if cc == 'unmute':
+        await mute(client, m, emb, conf_emb, opt, to_upd, un=True)
     if cc == 'tags':
         await tags(client, m, emb, conf_emb, opt, to_upd)
     if cc == 'clear':
@@ -252,7 +292,7 @@ async def commands(client, m, emb, conf_emb, opt, to_upd):
     else:
         await main(client, m, emb, conf_emb, opt, to_upd)
 
-async def final(emb, conf_emb, opt, to_upd):
+async def final(emb, conf_emb, opt, to_upd,):
     setbase(conf_emb, 'Final Settings', 'Thank you for using the interactive configuration!\nI am applying your settings. Meanwhile, please `~~contact` my master for bugs, issues, suggestions, etc. on this, as he is unfortunately not able to fully test this. Thank you!')
     conf_emb.set_footer(text='Thanks for using this!')
     await emb.edit(embed=conf_emb)
@@ -261,7 +301,7 @@ async def final(emb, conf_emb, opt, to_upd):
 
     setbase(conf_emb, 'Finished', 'Settings have been applied. Once again, PLEASE contact the owner with any feedback or issues. Also once again, thank you!')
     await emb.edit(embed=conf_emb)
-    exit(0)
+    return
 
 async def run(env):
     client, g, c, m = [env[k] for k in ('client', 'g', 'c', 'm')]

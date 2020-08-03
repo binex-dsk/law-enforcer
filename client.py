@@ -9,7 +9,7 @@ import discord
 
 from constants.auth import token, prefix, game
 from constants import db
-from tables import muted_roles, muted_members, server_config, tags
+from tables import muted_roles, muted_members, server_config, tags, conn
 
 client = discord.Client()
 
@@ -17,8 +17,11 @@ start_time = 0
 
 @client.event
 async def on_ready():
-    #for g in client.guilds:
-       # db.insert(server_config, {'guild': g.id})
+    for g in client.guilds:
+        try:
+            db.insert(server_config, {'guild': g.id})
+        except:
+            pass
     global start_time
     # used for uptime
     start_time = datetime.now()
@@ -68,6 +71,9 @@ async def on_message(msg):
     g = msg.guild
     m = msg.author
 
+    if cmd in db.fetch(server_config, {'guild': g.id}).fetchone().disabled_cmds.split():
+        return await c.send('This command exists, but has been disabled. Please contact the admins if you believe this is in error.')
+
     command = discord.utils.find(lambda cm: cmd in cm.names,
         [x for x in list(cmds.values()) if isinstance(x, ModuleType)])
     if not command:
@@ -98,7 +104,7 @@ async def on_member_join(m):
     #db.insert(server_config, {'guild': m.guild.id})
     mgc = db.fetch(server_config, {'guild': m.guild.id}).fetchone()
     if mgc.mute_evasion:
-        muted = muted_members.select().where(muted_members.c.unmute_after <= int(time.time())).where(muted_members.c.id == m.id).fetchone()
+        muted = conn.execute(muted_members.select().where(muted_members.c.unmute_after <= int(time.time())).where(muted_members.c.id == m.id)).fetchone()
 
         if muted:
             await m.add_roles(db.fetch(muted_roles, {'guild': m.guild.id}), f'Mute evasion; added {mgc.mute_evasion_time} hours to mute time.')

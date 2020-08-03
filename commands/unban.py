@@ -1,6 +1,7 @@
 import random
+from constants import db, checks
 from constants.auth import ids
-import constants.checks as checks
+from tables import server_config
 
 name = 'unban'
 names = ['unban', 'unsnipe']
@@ -16,6 +17,7 @@ arglength = 1
 async def run(env):
     args, client, g, c, m = [env[k] for k in ('args', 'client', 'g', 'c', 'm')]
 
+    conf = db.fetch(server_config, {'guild': g.id}).fetchone()
     try:
         await checks.perms(['ban_members'], g, c, m)
     except:
@@ -48,9 +50,10 @@ async def run(env):
     try:
         await g.unban(ban.user, reason=reason)
         await c.send(f'Successfully unbanned {ban.user}.\nReason: {reason}')
-        try:
-            await ban.user.send(f'You have been **unbanned** in {g} by {m}.\nReason: {reason}')
-        except:
-            pass
+        if conf.unban_dm:
+            try:
+                await ban.user.send(conf.unban_dm_message.format(MEM=ban.user, GUILD=g, MOD=m, REASON=reason))
+            except:
+                pass
     except Exception as e:
         await c.send(f'Error while unbanning user.\n{e}')

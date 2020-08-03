@@ -1,6 +1,6 @@
 import discord
 from constants import checks, db
-from tables import muted_roles as roles, muted_members as mems
+from tables import muted_roles as roles, muted_members as mems, server_config
 
 name = 'unmute'
 names = ['unmute']
@@ -16,6 +16,7 @@ arglength = 1
 async def run(env):
     args, msg, g, c, m = [env[k] for k in ('args', 'msg', 'g', 'c', 'm')]
 
+    conf = db.fetch(server_config, {'guild': g.id}).fetchone()
     try:
         await checks.perms(['mute_members', 'kick_members', 'manage_roles'], g, c, m)
     except:
@@ -43,11 +44,14 @@ async def run(env):
     reason = ' '.join(args[1:len(args)]) or 'None'
     if not muted_role in mem.roles:
         return await c.send('This member is not muted.')
-
-    await mem.remove_roles(muted_role, reason=reason)
-    db.delete(mems, {'id': mem.id, 'guild': g.id})
-    await c.send(f'Successfully unmuted {mem}.\nReason: {reason}')
     try:
-        await mem.send(f'You\'ve been unmuted in {g} by {m}.\nReason: {reason}')
-    except:
-        pass
+        await mem.remove_roles(muted_role, reason=reason)
+        db.delete(mems, {'id': mem.id, 'guild': g.id})
+        await c.send(f'Successfully unmuted {mem}.\nReason: {reason}')
+        if conf.mute_dm:
+            try:
+                await mem.send(conf.mute_dm_message.format(MEM=mem, GUILD=g, MOD=m, REASON=reason))
+            except:
+                pass
+    except Exception as e:
+        await c.send(f'Error while unmuting member: {e}')

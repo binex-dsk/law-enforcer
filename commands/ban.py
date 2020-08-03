@@ -37,7 +37,6 @@ async def run(env):
     try:
         if conf.ban_dm:
             try:
-
                 await member.send(conf.ban_dm_message.format(MEM=member, GUILD=g, MOD=m, REASON=reason))
             # if it doesn't work, ignore it and move on
             except:

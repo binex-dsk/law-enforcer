@@ -1,4 +1,4 @@
-from constants import checks, db
+from constants import db
 from tables import tags
 
 name = 'removetag'
@@ -7,18 +7,14 @@ long = 'Remove a tag from the server.'
 syntax = '(tag name)'
 ex1 = 'example'
 ex2 = 'test'
-notes = False
-reqperms = '`manage guild`'
+reqperms = ['manage guild']
+reqargs = ['args', 'client', 'g', 'c', 'm']
 no_docs = False
 arglength = 1
 
-async def run(env):
-    args, client, g, c, m = [env[k] for k in ('args', 'client', 'g', 'c', 'm')]
-
-    try:
-        await checks.perms(['manage_guild'], g, c, m)
-    except:
-        return
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     if len(args) < 1:
         return await c.send('Please provide a tag name.')

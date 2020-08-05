@@ -9,7 +9,8 @@ syntax = '(user) (time) (reason || none)'
 ex1 = 'id1 24 stop spamming'
 ex2 = 'id2 0.5'
 notes = 'The user is DMed when they are muted, as well as automatically unmuted.'
-reqperms = '`mute members`\n`kick members`\n`manage roles`'
+reqperms = ['mute members', 'kick members', 'manage roles']
+reqargs = ['args', 'msg', 'g', 'c', 'm']
 no_docs = False
 arglength = 2
 
@@ -17,14 +18,11 @@ def get_future(hrs):
     future = datetime.datetime.utcnow() + datetime.timedelta(minutes=int(hrs*60))
     return calendar.timegm(future.timetuple())
 
-async def run(env):
-    args, msg, g, c, m = [env[k] for k in ('args', 'msg', 'g', 'c', 'm')]
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     conf = db.fetch(server_config, {'guild': g.id}).fetchone()
-    try:
-        await checks.perms(['mute_members', 'kick_members', 'manage_roles'], g, c, m)
-    except:
-        return
 
     # checks the muted role
     result = db.fetch(roles, {'guild': g.id})

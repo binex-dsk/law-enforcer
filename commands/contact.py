@@ -7,12 +7,13 @@ syntax = '(message...)'
 ex1 = 'The bot crashes during the server setup!'
 ex2 = 'Can you add a channel setup to the server setup?'
 notes = 'Abuse of the contact system will result in you being **blacklisted** from it.'
-reqperms = 'none'
+reqargs = ['args', 'client', 'c', 'm']
 no_docs = False
 arglength = 1
 
-async def run(env):
-    args, client, c, m = [env[k] for k in ('args', 'client', 'c', 'm')]
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     message = ' '.join(args)
     owner = client.get_user(main_owner)

@@ -7,12 +7,13 @@ syntax = '(min \|\| 0) (max \|\| 10)'
 ex1 = '5 13'
 ex2 = ' '
 notes = 'This only generates integers at the moment.'
-reqperms = 'none'
 no_docs = False
+reqargs = ['args', 'c']
 arglength = 0
 
-async def run(env):
-    args, c = [env[k] for k in ('args', 'c')]
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     if len(args) < 1:
         min = 0

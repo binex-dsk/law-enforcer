@@ -1,17 +1,14 @@
 import os
-import constants.checks as checks
 
 names = ['bash']
+owner_only = True
 no_docs = True
+reqargs = ['args', 'c']
 arglength = 0
 
-async def run(env):
-    args, c, m = [env[k] for k in ('args', 'c', 'm')]
-
-    try:
-        await checks.owner(c, m)
-    except:
-        return
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     if not len(args) > 0:
         return await c.send('You must include bash code to execute!')

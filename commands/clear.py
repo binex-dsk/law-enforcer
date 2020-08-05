@@ -1,4 +1,4 @@
-from constants import checks, db
+from constants import db
 from tables import server_config
 
 name = 'clear'
@@ -8,18 +8,16 @@ syntax = '(amount || 20)'
 ex1 = '40'
 ex2 = ' '
 notes = 'The limit for this is very high (10000), but higher values (>2000) will be slower.'
-reqperms = '`manage messages`\n`read message history`'
+reqperms = ['manage messages', 'read message history']
+reqargs = ['args', 'g', 'c']
 no_docs = False
 arglength = 1
 
-async def run(env):
-    args, g, c, m = [env[k] for k in ('args', 'g', 'c', 'm')]
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     conf = db.fetch(server_config, {'guild': g.id}).fetchone()
-    try:
-        await checks.perms(['manage_messages', 'read_message_history'], g, c, m)
-    except:
-        return
 
     if len(args) < 1:
         amt = 20

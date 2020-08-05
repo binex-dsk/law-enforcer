@@ -10,12 +10,13 @@ ex1 = 'example'
 ex2 = 'test'
 notes = 'Similarly to the `tag` command, tags are specific to servers. '\
 'This command gives you the tag name, content, author, and creation date.'
-reqperms = 'None'
 no_docs = False
+reqargs = ['args', 'client', 'g', 'c']
 arglength = 1
 
-async def run(env):
-    args, client, g, c = [env[k] for k in ('args', 'client', 'g', 'c')]
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     if len(args) < 1:
         return await c.send('Please provide a tag to search for.')

@@ -9,18 +9,16 @@ ex1 = 'id1 don\'t do that again'
 ex2 = 'id2'
 notes = 'The user is DMed upon being kicked. Additionally, '\
 'by default, they are given a one-time invite to rejoin with.'
-reqperms = '`kick members`\n`create instant invite`'
+reqperms = ['kick members', 'create instant invite']
+reqargs = ['args', 'msg', 'g', 'c', 'm']
 no_docs = False
 arglength = 1
 
-async def run(env):
-    args, msg, g, c, m = [env[k] for k in ('args', 'msg', 'g', 'c', 'm')]
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     conf = db.fetch(server_config, {'guild': g.id}).fetchone()
-    try:
-        await checks.perms(['kick_members', 'create_instant_invite'], g, c, m)
-    except:
-        return
 
     if not msg.mentions:
         return await c.send('Please provide a member to kick.')

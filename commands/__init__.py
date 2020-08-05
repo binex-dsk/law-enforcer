@@ -1,2 +1,8 @@
 # Another init file.
-from . import addtag, ban, bash, clear, contact, eval, help, info, kick, mute, ping, removetag, restart, rng, setup, tag, taginfo, tags, unban, unmute, setmuted, config
+from importlib import import_module
+from pkgutil import walk_packages
+
+for _, name, _ in walk_packages(__path__):
+    import_module(f'commands.{name}')
+
+del import_module, walk_packages

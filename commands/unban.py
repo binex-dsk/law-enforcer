@@ -1,5 +1,5 @@
 import random
-from constants import db, checks
+from constants import db
 from constants.auth import ids
 from tables import server_config
 
@@ -10,18 +10,16 @@ syntax = '(user ID) (reason || none)'
 ex1 = f'{ids[random.randint(0, 1)]} not dumb stupid'
 ex2 = ids[random.randint(0, 1)]
 notes = 'The user is DMed upon being unbanned (if I can DM them).'
-reqperms = '`ban members`'
+reqperms = ['ban members']
+reqargs = ['args', 'client', 'g', 'c', 'm']
 no_docs = False
 arglength = 1
 
-async def run(env):
-    args, client, g, c, m = [env[k] for k in ('args', 'client', 'g', 'c', 'm')]
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     conf = db.fetch(server_config, {'guild': g.id}).fetchone()
-    try:
-        await checks.perms(['ban_members'], g, c, m)
-    except:
-        return
 
     if len(args) < 1:
         return await c.send('Please enter a user ID to unban.\n'

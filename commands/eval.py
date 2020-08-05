@@ -1,9 +1,10 @@
 # pylint: disable=unused-variable
 import random, ast, discord
-import constants.checks as checks
 
 names = ['eval']
+owner_only = True
 no_docs = True
+reqargs = ['args', 'msg', 'client', 'g', 'c', 'm']
 arglength = 0
 
 def insert_returns(body):
@@ -21,14 +22,9 @@ def insert_returns(body):
     if isinstance(body[-1], ast.With):
         insert_returns(body[-1].body)
 
-async def run(env):
-    # the unused vars are for eval to be more dynamic
-    args, msg, client, g, c, m = [env[k] for k in ('args', 'msg', 'client', 'g', 'c', 'm')]
-
-    try:
-        await checks.owner(c, m)
-    except:
-        return
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     if not len(args) > 0:
         return await c.send('You must include code to eval!')

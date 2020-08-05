@@ -1,5 +1,5 @@
 import discord
-from constants import checks, db
+from constants import db
 from tables import muted_roles as roles
 
 name = 'setmuted'
@@ -9,17 +9,14 @@ syntax = '(role ID)'
 ex1 = '705538476698763324'
 ex2 = '644334910810619924'
 notes = 'The usage of the `mute` and `unmute` commands will not be available until this is used.'
-reqperms = '`manage server`\n`manage roles`'
+reqperms = ['manage server', 'manage roles']
+reqargs = ['args', 'g', 'c']
 no_docs = False
 arglength = 1
 
-async def run(env):
-    args, g, c, m = [env[k] for k in ('args', 'g', 'c', 'm')]
-
-    try:
-        await checks.perms(['manage_guild', 'manage_roles'], g, c, m)
-    except:
-        return
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     try:
         id = int(args[0])

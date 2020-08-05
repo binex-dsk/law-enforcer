@@ -8,10 +8,9 @@ name = 'config'
 names = ['config', 'serverconfig']
 long = 'Configure various commands and settings.'
 syntax = ''
-ex1 = None
-ex2 = None
 notes = 'Unlike server setup, this utilizes embeds and message editing/deleting, making it easier to understand and use.'
-reqperms = '`administrator`'
+reqperms = ['administrator']
+reqargs = ['client', 'g', 'c', 'm']
 no_docs = False
 arglength = 0
 
@@ -303,16 +302,16 @@ async def final(emb, conf_emb, opt, to_upd,):
     await emb.edit(embed=conf_emb)
     return
 
-async def run(env):
-    client, g, c, m = [env[k] for k in ('client', 'g', 'c', 'm')]
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     opt = db.fetch(server_config, {'guild': g.id}).fetchone()
     conf_emb = discord.Embed()
 
     to_upd = {}
 
-    setbase(conf_emb, 'Server Configuration',
-            'Welcome to the interactive server configuration module!\nPlease choose the module to enter by typing its name.')
+    setbase(conf_emb, 'Server Configuration', 'Welcome to the interactive server configuration module!\nPlease choose the module to enter by typing its name.')
     addfield(conf_emb, 'Commands', 'Individual command configuration.')
     addfield(conf_emb, 'Other', 'General configuration settings.')
     conf_emb.set_footer(text='Type "back" to go back at any time.')

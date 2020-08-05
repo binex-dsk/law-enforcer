@@ -1,26 +1,21 @@
 import discord
-from constants import checks, setup_funcs # noqa
+from constants import setup_funcs
 
 name = 'setup'
 names = ['setup']
 long = 'Setup your brand-new server.'
 syntax = ''
-ex1 = False
-ex2 = False
 notes = 'This server setup is very much in a beta state. '\
 'Any issues must be redirected to the owner, using the `contact` command.'
-reqperms = '`administrator`'
+reqperms = ['administrator']
+reqargs = ['client', 'g', 'c', 'm']
 no_docs = False
 arglength = 0
 
 # this isn't the most efficient but it works
-async def run(env):
-    client, g, c, m = [env[k] for k in ('client', 'g', 'c', 'm')]
-
-    try:
-        await checks.perms(['administrator'], g, c, m)
-    except:
-        return
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     await c.send('Welcome to the interactive server setup!\n'\
     'This is a guide to help set your server up.\n'\

@@ -9,12 +9,13 @@ ex1 = 'example'
 ex2 = 'test'
 notes = 'Tags are specific to servers. Global tags may be added later, '\
 'but for now, tags can only be used in the server they were created in.'
-reqperms = 'None'
 no_docs = False
+reqargs = ['args', 'g', 'c']
 arglength = 1
 
-async def run(env):
-    args, g, c = [env[k] for k in ('args', 'g', 'c')]
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     if len(args) < 1:
         return await c.send('Please provide a tag.')

@@ -6,16 +6,15 @@ name = 'tags'
 names = ['tags', 'taglist']
 long = 'Get a list of all tags in the server.'
 syntax = ''
-ex1 = False
-ex2 = False
 notes = 'Potentially, if you have enough tags, the bot won\'t be able to display them all. '\
 'However, the amount of tags required for this to happen is huge, so don\'t worry about it.'
-reqperms = 'None'
 no_docs = False
+reqargs = ['g', 'c']
 arglength = 0
 
-async def run(env):
-    g, c = [env[k] for k in ('g', 'c')]
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     result = db.fetch(tags, {'guild': g.id})
     if not result:

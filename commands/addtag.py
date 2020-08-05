@@ -9,12 +9,13 @@ syntax = '(tag name)'
 ex1 = 'example Some tag'
 ex2 = 'test Test tag'
 notes = 'Access tags with the `tag` command, or their info with the `taginfo` command.\nSome servers may allow anyone to add tags.'
-reqperms = '`manage guild`'
+reqargs = ['args', 'g', 'c', 'm']
 no_docs = False
 arglength = 2
 
-async def run(env):
-    args, g, c, m = [env[k] for k in ('args', 'g', 'c', 'm')]
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     conf = db.fetch(server_config, {'guild': g.id}).fetchone()
     if not conf.allow_all_addtag:

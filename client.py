@@ -8,13 +8,11 @@ from thread import Thread
 import discord
 
 from constants.auth import token, prefix, game
-from constants import db
+from constants import db, checks
 from tables import muted_roles, muted_members, server_config, tags, conn
 
 client = discord.Client()
-
-start_time = 0
-
+client.start_time = None
 @client.event
 async def on_ready():
     for g in client.guilds:
@@ -22,9 +20,8 @@ async def on_ready():
             db.insert(server_config, {'guild': g.id})
         except:
             pass
-    global start_time
     # used for uptime
-    start_time = datetime.now()
+    client.start_time = datetime.now()
 
     await client.change_presence(status=discord.Status.online, activity=discord.Game(game))
     print('Successfully logged in.')
@@ -59,12 +56,11 @@ async def on_message(msg):
         return
 
     # the actual arguments
-    args = msg.content[len(prefix):len(msg.content)].strip().split(' ')
+    args = msg.content[len(prefix):].strip().split(' ')
 
     # get the command
-    cmd = args[0].lower()
+    cmd = args.pop(0).lower()
     # remove the command from args
-    args.pop(0)
 
     # used for shortening code
     c = msg.channel
@@ -74,25 +70,31 @@ async def on_message(msg):
     if cmd in db.fetch(server_config, {'guild': g.id}).fetchone().disabled_cmds.split():
         return await c.send('This command exists, but has been disabled. Please contact the admins if you believe this is in error.')
 
-    command = discord.utils.find(lambda cm: cmd in cm.names,
-        [x for x in list(cmds.values()) if isinstance(x, ModuleType)])
+    command = discord.utils.find(lambda cm: cmd in cm.names, [x for x in list(cmds.values()) if isinstance(x, ModuleType)])
     if not command:
         return
     # environment to run commands
-    env = {
-        'args': args,
-        'msg': msg,
-        'client': client,
-        'g': g,
-        'c': c,
-        'm': m,
-        'start_time': start_time
-    }
     if command.arglength > len(args):
         return await c.send(f'This command requires more arguments. Please use '\
             f'`{prefix}help {command.name}` for more info.')
+    if hasattr(command, 'reqperms'):
+        try:
+            await checks.perms(command.reqperms, g, c, m)
+        except:
+            return
+    if hasattr(command, 'owner_only'):
+        try:
+            await checks.owner(c, m)
+        except:
+            return
+
+    locals()['client'] = client
+    env = {}
+    for r in command.reqargs:
+        lc = locals().get(r)
+        env.update({r: lc})
     try:
-        await command.run(env)
+        await command.run(**env)
     except Exception as e:
         await c.send(f'Error during command execution:\n{e}\n'\
         'Please contact the owner with details of this error immediately.')
@@ -101,7 +103,6 @@ async def on_message(msg):
 # to prevent mute evasion!
 @client.event
 async def on_member_join(m):
-    #db.insert(server_config, {'guild': m.guild.id})
     mgc = db.fetch(server_config, {'guild': m.guild.id}).fetchone()
     if mgc.mute_evasion:
         muted = conn.execute(muted_members.select().where(muted_members.c.unmute_after <= int(time.time())).where(muted_members.c.id == m.id)).fetchone()

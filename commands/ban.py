@@ -8,18 +8,16 @@ syntax = '(user) (reason || none)'
 ex1 = 'id1 dumb stupid'
 ex2 = 'id2'
 notes = 'The user is DMed upon being banned.'
-reqperms = '`ban members`'
+reqperms = ['ban members']
+reqargs = ['args', 'msg', 'g', 'c', 'm']
 no_docs = False
 arglength = 1
 
-async def run(env):
-    args, msg, g, c, m = [env[k] for k in ('args', 'msg', 'g', 'c', 'm')]
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     conf = db.fetch(server_config, {'guild': g.id}).fetchone()
-    try:
-        await checks.perms(['ban_members'], g, c, m)
-    except:
-        return
 
     # checks for mentions
     if not msg.mentions:

@@ -9,18 +9,16 @@ syntax = '(user) (reason || none)'
 ex1 = 'id1 said sorry in dms'
 ex2 = 'id2'
 notes = 'The user is DMed when unmuted.'
-reqperms = '`mute members`\n`kick members`\n`manage roles`'
+reqperms = ['mute members', 'kick members', 'manage roles']
+reqargs = ['args', 'msg', 'g', 'c', 'm']
 no_docs = False
 arglength = 1
 
-async def run(env):
-    args, msg, g, c, m = [env[k] for k in ('args', 'msg', 'g', 'c', 'm')]
+async def run(**env):
+    for _, a in enumerate(reqargs):
+        globals().update({a: env.get(a)})
 
     conf = db.fetch(server_config, {'guild': g.id}).fetchone()
-    try:
-        await checks.perms(['mute_members', 'kick_members', 'manage_roles'], g, c, m)
-    except:
-        return
 
     result = db.fetch(roles, {'guild': g.id})
     if not result:

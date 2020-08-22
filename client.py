@@ -79,7 +79,7 @@ async def on_message(msg):
             f'`{prefix}help {command.name}` for more info.')
     if hasattr(command, 'reqperms'):
         try:
-            await checks.perms(command.reqperms, g, c, m)
+            await checks.perms([s.replace(' ', '_') for s in command.reqperms], g, c, m)
         except:
             return
     if hasattr(command, 'owner_only'):

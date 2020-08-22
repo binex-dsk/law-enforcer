@@ -58,7 +58,7 @@ async def run(**env):
         if hasattr(cmd, 'notes'):
             helpEmb.add_field(name='Extra Notes', value=cmd.notes)
         if hasattr(cmd, 'reqperms'):
-            helpEmb.add_field(name='Required Permissions', value=cmd.reqperms.upper().replace(' ', '_'))
+            helpEmb.add_field(name='Required Permissions', value='\n'.join(q.upper().replace(' ', '_') for q in cmd.reqperms))
     # no valid command? go here
     else:
         helpEmb.title = 'Invalid command!'

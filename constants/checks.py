@@ -20,10 +20,10 @@ async def owner(c, m):
 
 async def roles(auth, mem, g, c):
     """Checks role positions."""
-    if g.me.top_role < mem.top_role:
-        await c.send('I am at a lower level on the role hierarchy than this member.')
-    elif auth.top_role < mem.top_role:
-        await c.send('This member has a higher role than you.')
+    if g.me.top_role <= mem.top_role:
+        await c.send('I am at an equal or lower level on the role hierarchy than this member.')
+    elif auth.top_role <= mem.top_role:
+        await c.send('This member has an equal or higher role than you.')
     else:
         return True
     raise Exception()

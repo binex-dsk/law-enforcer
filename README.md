@@ -1,7 +1,7 @@
 # Law Enforcer: Master Branch
 The source code and some info related to my discord bot project Law Enforcer. This is the up-to-date version and is what is actually running.
 
-Current version: 1.3.0
+Current version: 1.3.1
 
 Server: [invite](https://discord.gg/PVTBgK6)
 

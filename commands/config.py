@@ -6,13 +6,10 @@ from constants import db
 
 name = 'config'
 names = ['config', 'serverconfig']
-long = 'Configure various commands and settings.'
-syntax = ''
+desc = 'Configure various commands and settings.'
 notes = 'Unlike server setup, this utilizes embeds and message editing/deleting, making it easier to understand and use.'
 reqperms = ['administrator']
 reqargs = ['client', 'g', 'c', 'm']
-no_docs = False
-arglength = 0
 
 def gval(to_upd, opt, row):
     return f"{to_upd.get(row)}" if f"{to_upd.get(row)}" != "None" else f"{opt[row]}"
@@ -289,21 +286,23 @@ async def commands(client, m, emb, conf_emb, opt, to_upd):
     if cc == 'clear':
         await clear(client, m, emb, conf_emb, opt, to_upd)
     else:
-        await main(client, m, emb, conf_emb, opt, to_upd)
+        return await main(client, m, emb, conf_emb, opt, to_upd)
 
 async def final(emb, conf_emb, opt, to_upd,):
     setbase(conf_emb, 'Final Settings', 'Thank you for using the interactive configuration!\nI am applying your settings. Meanwhile, please `~~contact` my master for bugs, issues, suggestions, etc. on this, as he is unfortunately not able to fully test this. Thank you!')
     conf_emb.set_footer(text='Thanks for using this!')
     await emb.edit(embed=conf_emb)
-
-    db.update(server_config, {'guild': opt.guild}, to_upd)
+    
+    try:
+        db.update(server_config, {'guild': opt.guild}, to_upd)
+    except:
+        pass
 
     setbase(conf_emb, 'Finished', 'Settings have been applied. Once again, PLEASE contact the owner with any feedback or issues. Also once again, thank you!')
-    await emb.edit(embed=conf_emb)
-    return
+    return await emb.edit(embed=conf_emb)
 
 async def run(**env):
-    for _, a in enumerate(reqargs):
+    for _, a in enumerate(env):
         globals().update({a: env.get(a)})
 
     opt = db.fetch(server_config, {'guild': g.id}).fetchone()

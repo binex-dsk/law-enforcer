@@ -4,38 +4,30 @@ from tables import muted_roles as roles
 
 name = 'setmuted'
 names = ['setmuted', 'mutedrole']
-long = 'Set the muted role for the server.'
-syntax = '(role ID)'
-ex1 = '705538476698763324'
-ex2 = '644334910810619924'
+desc = 'Set the muted role for the server.'
+examples = ['705538476698763324', '644334910810619924']
 notes = 'The usage of the `mute` and `unmute` commands will not be available until this is used.'
-reqperms = ['manage server', 'manage roles']
+reqperms = ['manage guild', 'manage roles']
 reqargs = ['args', 'g', 'c']
-no_docs = False
-arglength = 1
+cargs = [
+    {
+        'name': 'role ID',
+        'aname': 'role',
+        'optional': False,
+        'excarg': 'g',
+        'check': lambda a, g: a.isdigit() and g.get_role(int(a)),
+        'errmsg': 'Please provide a valid role ID in this server.'
+    }
+]
 
 async def run(**env):
-    for _, a in enumerate(reqargs):
+    for _, a in enumerate(env):
         globals().update({a: env.get(a)})
 
-    try:
-        id = int(args[0])
-    except:
-        return await c.send('Please provide a valid role ID.')
-
-    role = discord.utils.get(g.roles, id=id)
-
-    if not role:
-        return await c.send('This role is not present in the server.')
-
     fetched = db.fetch(roles, {'guild': g.id})
-    row = None
-    try:
-        row = fetched.fetchone()
-    except:
-        pass
 
-    if row:
+    if fetched:
+        row = fetched.fetchone()
         if row.id == id:
             return await c.send('This role is already the muted role.')
 

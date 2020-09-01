@@ -8,10 +8,9 @@ from constants.auth import ids, prefix
 names = ['help']
 no_docs = True
 reqargs = ['args', 'client', 'c']
-arglength = 0
 
 async def run(**env):
-    for _, a in enumerate(reqargs):
+    for _, a in enumerate(env):
         globals().update({a: env.get(a)})
 
     # initialize an helpEmbed
@@ -38,20 +37,22 @@ async def run(**env):
         helpEmb.set_footer(text='Law Enforcer v1.3.0', icon_url=client.user.avatar_url)
 
     elif cmd:
-        if cmd.no_docs:
+        if hasattr(cmd, 'no_docs'):
             return await c.send('The command you entered exists but lacks documentation. '\
             'If you believe this is in error, contact the owner.')
-        if hasattr(cmd, 'ex1'):
-            ex1 = cmd.ex1.replace('id1', id1)
-            ex2 = cmd.ex2.replace('id2', id2)
+        if hasattr(cmd, 'examples'):
+            examples = [x.replace('id1', id1).replace('id2', id2) for x in cmd.examples]
         nl = '\n'
         escpref = f'\\{prefix}'
         helpEmb.title = cmd.name
-        helpEmb.description = cmd.long
-        helpEmb.add_field(name='Usage', value=f'\\{prefix}{cmd.name} {cmd.syntax}', inline=False)
-        if ex1:
+        helpEmb.description = cmd.desc
+        if hasattr(cmd, 'cargs'):
+            helpEmb.add_field(name='Usage', value=f'\\{prefix}{cmd.name} ' + ' '.join(f'({x["name"]})' if not x['optional'] else f'[{x["name"]} || {x["default"]}]' for x in cmd.cargs), inline=False)
+        else:
+            helpEmb.add_field(name='Usage', value=f'\\{prefix}{cmd.name}', inline=False)
+        if examples:
             helpEmb.add_field(name='Examples',
-            value=f'\\{prefix}{cmd.name} {ex1}\n\\{prefix}{cmd.name} {ex2}', inline=False)
+            value='\n'.join(f'{escpref}{cmd.name} {x}' for x in cmd.examples), inline=False)
         if hasattr(cmd, 'names') and len(cmd.names) > 1:
             helpEmb.add_field(name='Aliases',
             value=f'\\{prefix}{f"{nl}{escpref}".join(cmd.names[1:])}', inline=False)

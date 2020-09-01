@@ -4,20 +4,30 @@ from tables import tags, server_config
 
 name = 'addtag'
 names = ['addtag']
-long = 'Add a tag to the server.'
-syntax = '(tag name)'
-ex1 = 'example Some tag'
-ex2 = 'test Test tag'
+desc = 'Add a tag to the server.'
+examples = ['example Some tag.']
 notes = 'Access tags with the `tag` command, or their info with the `taginfo` command.\nSome servers may allow anyone to add tags.'
-reqargs = ['args', 'g', 'c', 'm']
-no_docs = False
-arglength = 2
+reqargs = ['args', 'g', 'c', 'm', 'conf']
+cargs = [
+    {
+        'name': 'tag name',
+        'novar': True,
+        'optional': False,
+        'excarg': 'g',
+        'check': lambda t, g: not db.exists(tags, {'name': t, 'guild': g.id}),
+        'errmsg': 'That tag is already in the server.'
+    },
+    {
+        'name': 'tag content',
+        'aname': 'tagcont',
+        'optional': False
+    }
+]
 
 async def run(**env):
-    for _, a in enumerate(reqargs):
+    for _, a in enumerate(env):
         globals().update({a: env.get(a)})
 
-    conf = db.fetch(server_config, {'guild': g.id}).fetchone()
     if not conf.allow_all_addtag:
         try:
             await checks.perms(['manage_guild'], g, c, m)
@@ -25,11 +35,7 @@ async def run(**env):
             return
 
     tagname = args[0]
-
-    if db.exists(tags, {'name': tagname, 'guild': g.id}):
-        return await c.send('That tag is already in the server.')
-
-    tagcont = ' '.join(args[1:len(args)])
+    #tagcont = ' '.join(args[1:len(args)])
     now = datetime.now()
 
     # basically, this code just adds the tag to a SQL table

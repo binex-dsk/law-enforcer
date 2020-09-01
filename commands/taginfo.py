@@ -4,35 +4,33 @@ from tables import tags
 
 name = 'taginfo'
 names = ['taginfo']
-long = 'Get info on a tag in the server.'
-syntax = '(tag name)'
-ex1 = 'example'
-ex2 = 'test'
+desc = 'Get info on a tag in the server.'
+examples = ['example']
 notes = 'Similarly to the `tag` command, tags are specific to servers. '\
 'This command gives you the tag name, content, author, and creation date.'
-no_docs = False
 reqargs = ['args', 'client', 'g', 'c']
-arglength = 1
+cargs = [
+    {
+        'name': 'tag name',
+        'aname': 'tag',
+        'optional': False,
+        'excarg': 'g',
+        'check': lambda a, g: db.fetch(tags, {'name': a, 'guild': g.id}),
+        'errmsg': 'That tag doesn\'t exist in this server.'
+    }
+]
 
 async def run(**env):
-    for _, a in enumerate(reqargs):
+    for _, a in enumerate(env):
         globals().update({a: env.get(a)})
 
-    if len(args) < 1:
-        return await c.send('Please provide a tag to search for.')
-
-    tag = db.fetch(tags, {'name': args[0], 'guild': g.id})
-
-    if not tag:
-        return await c.send('That tag doesn\'t exist in this server.')
-
-    tag = tag.fetchone()
+    tagf = tag.fetchone()
     emb = discord.Embed()
 
-    emb.title = f'Tag {tag.name}'
+    emb.title = f'Tag {tagf.name}'
 
-    emb.description = tag.content
+    emb.description = tagf.content
 
-    emb.add_field(name='Created By', value=f'{tag.creatortag}\n{tag.creatorid}', inline=False)\
-    .set_footer(text=tag.createdat, icon_url=client.user.avatar_url)
+    emb.add_field(name='Created By', value=f'{tagf.creatortag}\n{tagf.creatorid}', inline=False)\
+    .set_footer(text=tagf.createdat, icon_url=client.user.avatar_url)
     await c.send(embed=emb)

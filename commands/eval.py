@@ -1,11 +1,12 @@
 # pylint: disable=unused-variable
 import random, ast, discord
+from constants import db
+from tables import tags, server_config
 
 names = ['eval']
 owner_only = True
 no_docs = True
 reqargs = ['args', 'msg', 'client', 'g', 'c', 'm']
-arglength = 0
 
 def insert_returns(body):
     # insert return stmt if the last expression is a expression statement
@@ -23,7 +24,7 @@ def insert_returns(body):
         insert_returns(body[-1].body)
 
 async def run(**env):
-    for _, a in enumerate(reqargs):
+    for _, a in enumerate(env):
         globals().update({a: env.get(a)})
 
     if not len(args) > 0:
@@ -51,9 +52,14 @@ async def run(**env):
         body = parsed.body[0].body
 
         insert_returns(body)
-
+        eenv = env
+        eenv.update({
+            'db': db,
+            'tags': tags,
+            'server_config': server_config
+        })
         # eval the code
-        exec(compile(parsed, filename='<ast>', mode='exec'), env)
+        exec(compile(parsed, filename='<ast>', mode='exec'), eenv)
 
         result = (await eval(f'{fn_name}()', env))
         await c.send(embed=emb.add_field(name='Returns', value=f'```py\n{result}```', inline=False))

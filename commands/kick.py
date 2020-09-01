@@ -1,24 +1,33 @@
 from constants import checks, db
 from tables import server_config
+from discord.utils import escape_mentions
 
 name = 'kick'
 names = ['kick', 'softban']
-long = 'Kick a user from the server.'
-syntax = '(user) (reason || none)'
-ex1 = 'id1 don\'t do that again'
-ex2 = 'id2'
+desc = 'Kick a user from the server.'
+examples = ['id1 don\'t do that again', 'id2']
 notes = 'The user is DMed upon being kicked. Additionally, '\
 'by default, they are given a one-time invite to rejoin with.'
 reqperms = ['kick members', 'create instant invite']
-reqargs = ['args', 'msg', 'g', 'c', 'm']
-no_docs = False
-arglength = 1
+reqargs = ['args', 'msg', 'g', 'c', 'm', 'conf']
+cargs = [
+    {
+        'name': 'user mention',
+        'novar': True,
+        'optional': False,
+        'check': lambda a: escape_mentions(a) != a,
+        'errmsg': 'Please provide a member to kick.'
+    },
+    {
+        'name': 'reason',
+        'optional': True,
+        'default': 'None'
+    }
+]
 
 async def run(**env):
-    for _, a in enumerate(reqargs):
+    for _, a in enumerate(env):
         globals().update({a: env.get(a)})
-
-    conf = db.fetch(server_config, {'guild': g.id}).fetchone()
 
     if not msg.mentions:
         return await c.send('Please provide a member to kick.')

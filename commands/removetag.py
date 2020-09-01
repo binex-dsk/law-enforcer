@@ -3,25 +3,24 @@ from tables import tags
 
 name = 'removetag'
 names = ['removetag', 'deletetag', 'deltag']
-long = 'Remove a tag from the server.'
-syntax = '(tag name)'
-ex1 = 'example'
-ex2 = 'test'
+desc = 'Remove a tag from the server.'
+examples = ['example', 'test']
 reqperms = ['manage guild']
 reqargs = ['args', 'client', 'g', 'c', 'm']
-no_docs = False
-arglength = 1
+cargs = [
+    {
+        'name': 'tag name',
+        'aname': 'result',
+        'optional': False,
+        'excarg': 'g',
+        'check': lambda a, g: db.fetch(tags, {'guild': g.id, 'name': a}),
+        'errmsg': 'That tag does not exist in this server.'
+    }
+]
 
 async def run(**env):
-    for _, a in enumerate(reqargs):
+    for _, a in enumerate(env):
         globals().update({a: env.get(a)})
-
-    if len(args) < 1:
-        return await c.send('Please provide a tag name.')
-
-    result = db.fetch(tags, {'guild': g.id, 'name': args[0]})
-    if not result:
-        return await c.send('That tag does not exist in this server.')
 
     await c.send('Are you SURE you want to remove this tag? '\
     'Deleted tags are gone forever!\nType `y` to confirm or `n` to cancel.')

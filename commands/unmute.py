@@ -1,31 +1,40 @@
 import discord
 from constants import checks, db
 from tables import muted_roles as roles, muted_members as mems, server_config
+from discord.utils import escape_mentions
 
 name = 'unmute'
 names = ['unmute']
-long = 'Unmuted a muted user.'
-syntax = '(user) (reason || none)'
-ex1 = 'id1 said sorry in dms'
-ex2 = 'id2'
+desc = 'Unmuted a muted user.'
+examples = ['id1 said sorry in dms', 'id2']
 notes = 'The user is DMed when unmuted.'
 reqperms = ['mute members', 'kick members', 'manage roles']
-reqargs = ['args', 'msg', 'g', 'c', 'm']
-no_docs = False
-arglength = 1
+reqargs = ['args', 'msg', 'g', 'c', 'm', 'conf']
+cargs = [
+    {
+        'name': 'user mention',
+        'novar': True,
+        'optional': False,
+        'check': lambda a: escape_mentions(a) != a,
+        'errmsg': 'Please provide a valid member to mute.'
+    },
+    {
+        'name': 'reason',
+        'optional': True,
+        'default': 'None'
+    }
+]
 
 async def run(**env):
-    for _, a in enumerate(reqargs):
+    for _, a in enumerate(env):
         globals().update({a: env.get(a)})
-
-    conf = db.fetch(server_config, {'guild': g.id}).fetchone()
 
     result = db.fetch(roles, {'guild': g.id})
     if not result:
         return await c.send('No muted role is set! Please set one with `setmuted`.')
 
     role = result.fetchone()
-    muted_role = discord.utils.get(g.roles, id=role.id)
+    muted_role = g.get_role(id=role.id)
 
     if g.me.top_role < muted_role:
         return await c.send('I am at a lower level on the hierarchy than the muted role.')
@@ -39,7 +48,6 @@ async def run(**env):
     except:
         return
 
-    reason = ' '.join(args[1:len(args)]) or 'None'
     if not muted_role in mem.roles:
         return await c.send('This member is not muted.')
     try:

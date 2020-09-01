@@ -7,7 +7,7 @@ reqargs = ['args', 'c']
 arglength = 0
 
 async def run(**env):
-    for _, a in enumerate(reqargs):
+    for _, a in enumerate(env):
         globals().update({a: env.get(a)})
 
     if not len(args) > 0:

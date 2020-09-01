@@ -4,16 +4,13 @@ from tables import tags
 
 name = 'tags'
 names = ['tags', 'taglist']
-long = 'Get a list of all tags in the server.'
-syntax = ''
+desc = 'Get a list of all tags in the server.'
 notes = 'Potentially, if you have enough tags, the bot won\'t be able to display them all. '\
 'However, the amount of tags required for this to happen is huge, so don\'t worry about it.'
-no_docs = False
 reqargs = ['g', 'c']
-arglength = 0
 
 async def run(**env):
-    for _, a in enumerate(reqargs):
+    for _, a in enumerate(env):
         globals().update({a: env.get(a)})
 
     result = db.fetch(tags, {'guild': g.id})

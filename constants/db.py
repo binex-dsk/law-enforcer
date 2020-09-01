@@ -6,7 +6,7 @@ def exists(table, values): # I could do this way better but this works
         table (sqlalchemy.Table): The table to check.
 
         values (dict): Values to check for existence.
-    Return value (bool): Whether the table exists or not."""
+    Return value: Whether the table exists or not (bool)."""
     selection = table.select()
     for i, _ in enumerate(values):
         selection = selection.where(table.c[list(values.keys())[i]] == list(values.values())[i])
@@ -24,15 +24,16 @@ def insert(table, values):
         table (sqlalchemy.Table): The table to insert into.
 
         values (dict): The values to insert into the table.
-    Return value (NoneType or sqlalchemy.ResultProxy): None or sqlalchemy.ResultProxy object.
+    Return value: None or sqlalchemy.ResultProxy object.
 
     Throws an error if the table does not exist."""
-    try:
-        return conn.execute(table.insert(), [
-            values
-        ])
-    except:
-        raise Exception('Table not found.')
+    #try:
+    return conn.execute(table.insert(), [
+        values
+    ])
+    """except Exception as e:
+        print(e)
+        raise Exception('Table not found.')"""
 
 def delete(table, values):
     """Deletes a value from a table.
@@ -41,7 +42,7 @@ def delete(table, values):
         table (sqlalchemy.Table): The table to delete from.
 
         values (dict): The search value to delete.
-    Return value (NoneType or sqlalchemy.ResultProxy): None or sqlalchemy.ResultProxy object.
+    Return value: None or sqlalchemy.ResultProxy object.
 
     Throws an error if the row does not exist."""
     fetched = fetch(table, values)
@@ -60,7 +61,8 @@ def fetch(table, values):
         table (sqlalchemy.Table): The table to fetch a row from.
 
         values (dict): The values to search for.
-    Return value (NoneType or sqlalchemy.ResultProxy): None or sqlalchemy.ResultProxy object."""
+    Return value: None or sqlalchemy.ResultProxy object."""
+    
     if not exists(table, values):
         return None
     selection = table.select()
@@ -77,7 +79,7 @@ def update(table, checkVals, newVals):
         checkVals (dict): Values to find a row for.
 
         newVals (dict): Values to update in that row.
-    Return value (NoneType or sqlalchemy.ResultProxy): None or sqlalchemy.ResultProxy object.
+    Return value: None or sqlalchemy.ResultProxy object.
 
     Throws an error if the row doesn't exist."""
     fetched = fetch(table, checkVals)

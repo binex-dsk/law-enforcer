@@ -2,15 +2,12 @@ from datetime import datetime
 
 name = 'ping'
 names = ['ping']
-long = 'Get the current Client and API ping.'
-syntax = ''
+desc = 'Get the current Client and API ping.'
 notes = 'Client ping is the hard Client latency, while the API ping is how long I take to respond.'
 reqargs = ['client', 'c']
-no_docs = False
-arglength = 0
 
 async def run(**env):
-    for _, a in enumerate(reqargs):
+    for _, a in enumerate(env):
         globals().update({a: env.get(a)})
     print(globals())
     # get the current time

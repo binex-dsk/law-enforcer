@@ -5,33 +5,30 @@ from tables import server_config
 
 name = 'unban'
 names = ['unban', 'unsnipe']
-long = 'Unban a banned user from the server.'
-syntax = '(user ID) (reason || none)'
-ex1 = f'{ids[random.randint(0, 1)]} not dumb stupid'
-ex2 = ids[random.randint(0, 1)]
+desc = 'Unban a banned user from the server.'
+examples = [f'{ids[random.randint(0, 1)]} not dumb stupid', str(ids[random.randint(0, 1)])]
 notes = 'The user is DMed upon being unbanned (if I can DM them).'
 reqperms = ['ban members']
-reqargs = ['args', 'client', 'g', 'c', 'm']
-no_docs = False
-arglength = 1
+reqargs = ['args', 'client', 'g', 'c', 'm', 'conf']
+cargs = [
+    {
+        'name': 'user mention/id',
+        'aname': 'id',
+        'optional': False,
+        'excarg': 'client',
+        'check': lambda a, c: a.isdigit() and int(a) in [x.id for x in c.get_all_members()],
+        'errmsg': 'Please provide a valid user ID to unban.'
+    },
+    {
+        'name': 'reason',
+        'optional': True,
+        'default': 'None'
+    }
+]
 
 async def run(**env):
-    for _, a in enumerate(reqargs):
+    for _, a in enumerate(env):
         globals().update({a: env.get(a)})
-
-    conf = db.fetch(server_config, {'guild': g.id}).fetchone()
-
-    if len(args) < 1:
-        return await c.send('Please enter a user ID to unban.\n'
-        'To get a user ID, enable **Developer Mode** in the **Appearance** tab '\
-        'in settings, then right-click the user and select **\'Copy ID.\'**')
-
-    try:
-        id = int(args[0])
-    except:
-        return await c.send('Please provide a valid ID.')
-
-    reason = ' '.join(args[1:len(args)]) or 'None'
 
     ban = None
 

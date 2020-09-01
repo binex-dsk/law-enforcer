@@ -1,22 +1,22 @@
-import time, asyncio
+import time, asyncio, json
 from datetime import timedelta
 from timeloop import Timeloop
-import constants.db as db
+from constants import db, auth
 from tables import muted_members, muted_roles, conn
+import requests
 
+def req(path, data, meth):
+    return requests.request(meth, f"https://discord.com/api/v8/{path}", headers={'Authorization': f'Bot {auth.token}', 'Content-Type': 'application/json'}, data=data).json()
 timer = Timeloop()
 
 checkTime = 5
-client = None
 
 class Thread():
     """Thread class to manage the mute timers."""
     @staticmethod
-    def start(cli, block=False):
-        global client
+    def start(block=False):
         try:
             timer.start(block)
-            client = cli
         except Exception as e:
             print(e)
 
@@ -29,15 +29,27 @@ class Thread():
 
 async def search():
     """Searches through muted members and unmutes them if their mute time is up."""
-    global client
     mems = conn.execute(muted_members.select().where(muted_members.c.unmute_after <= int(time.time()))).fetchall()
 
     for m in mems:
-        mem = await client.fetch_user(m.id)
-        gmem = client.get_guild(m.guild).member(mem)
-        await gmem.remove_roles(db.fetch(muted_roles, {'guild': m.guild}).fetchone().id, "Automatic unmute")
+        gid = m[1]
+        mid = m[0]
+        print(m)
+        roles = req(f'guilds/{gid}/members/{mid}', {}, 'get')['roles']
+        rid = db.fetch(muted_roles, {'guild': gid}).fetchone().id
         try:
-            await mem.send(f'You have been automatically unmuted in {client.get_guild(m.guild)}.')
+            del roles[roles.index(str(rid))]
+        except:
+            pass
+        rm = req(f'guilds/{gid}/members/{mid}', json.dumps({'roles': roles}), 'patch')
+        if rm.get('user'):
+            db.delete(muted_members, {'id': mid, 'guild': gid})
+        else:
+            return
+        try:
+            cid = req('users/@me/channels', json.dumps({'recipient_id': mid}), 'post')['id']
+            gname = req(f'guilds/{gid}', {}, 'get')['name']
+            print(req(f'channels/{cid}/messages', {'content': f'You have been automatically unmuted in {gname}.'}, 'post'))
         except:
             pass
 

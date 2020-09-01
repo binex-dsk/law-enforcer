@@ -4,12 +4,11 @@ from constants.resp import info
 names = ['info']
 no_docs = True
 reqargs = ('c', 'client')
-arglength = 0
 
 async def run(**env):
     # staticinfo and endinfo are used to shorten this a bit, see constants
     # the uptime is just the current total of seconds it's been up
-    for _, a in enumerate(reqargs):
+    for _, a in enumerate(env):
         globals().update({a: env.get(a)})
 
     await c.send(info.format('\nCurrent uptime: '\

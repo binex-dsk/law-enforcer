@@ -10,7 +10,7 @@ tags = Table(
     Column('creatortag', String),
     Column('creatorid', Integer),
     Column('createdat', String),
-    Column('guild', Integer, unique=True)
+    Column('guild', Integer)
 )
 server_config = Table(
     'server_config', meta,

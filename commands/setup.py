@@ -3,18 +3,15 @@ from constants import setup_funcs
 
 name = 'setup'
 names = ['setup']
-long = 'Setup your brand-new server.'
-syntax = ''
+desc = 'Setup your brand-new server.'
 notes = 'This server setup is very much in a beta state. '\
 'Any issues must be redirected to the owner, using the `contact` command.'
 reqperms = ['administrator']
 reqargs = ['client', 'g', 'c', 'm']
-no_docs = False
-arglength = 0
 
 # this isn't the most efficient but it works
 async def run(**env):
-    for _, a in enumerate(reqargs):
+    for _, a in enumerate(env):
         globals().update({a: env.get(a)})
 
     await c.send('Welcome to the interactive server setup!\n'\

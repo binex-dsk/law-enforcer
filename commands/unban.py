@@ -16,7 +16,7 @@ cargs = [
         'aname': 'id',
         'optional': False,
         'excarg': 'client',
-        'check': lambda a, c: a.isdigit() and int(a) in [x.id for x in c.get_all_members()],
+        'check': lambda a, c: a.isdigit() and int(a),
         'errmsg': 'Please provide a valid user ID to unban.'
     },
     {
@@ -34,7 +34,7 @@ async def run(**env):
 
     try:
         # fetch the ban for that user
-        user = client.get_user(id)
+        user = await client.fetch_user(id)
         ban = await g.fetch_ban(user)
     except Exception as e:
         # fetch_ban throws an exception if the user isn't banned

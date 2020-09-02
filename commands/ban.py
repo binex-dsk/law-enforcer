@@ -15,7 +15,7 @@ cargs = [
         'aname': 'id',
         'optional': False,
         'excarg': 'client',
-        'check': lambda a, c: (a.isdigit() or escape_mentions(a) != a) and (mid := int(a.strip('<@&#!>'))) in [x.id for x in c.get_all_members()] and mid,
+        'check': lambda a, c: (a.isdigit() or escape_mentions(a) != a) and int(a.strip('<@&#!>')),
         'errmsg': 'Please provide a valid user mention or ID to ban.'
     },
     {
@@ -30,7 +30,10 @@ async def run(**env):
         globals().update({a: env.get(a)})
 
     mem = g.get_member(id)
-    user = await client.fetch_user(id)
+    try:
+        user = await client.fetch_user(id)
+    except:
+        return await c.send(cargs[0]['errmsg'])
     if mem:
         try:
             await checks.roles(m, mem, g, c)

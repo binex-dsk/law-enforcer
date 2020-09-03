@@ -13,10 +13,11 @@ reqargs = ['args', 'msg', 'g', 'c', 'm', 'conf']
 cargs = [
     {
         'name': 'user mention',
-        'novar': True,
+        'aname': 'mem',
+        'excarg': 'g',
         'optional': False,
-        'check': lambda a: escape_mentions(a) != a,
-        'errmsg': 'Please provide a valid member to mute.'
+        'check': lambda a, g: checks.cid(a, g.get_member),
+        'errmsg': 'Please provide a valid member to unmute.'
     },
     {
         'name': 'reason',
@@ -39,10 +40,6 @@ async def run(**env):
     if g.me.top_role < muted_role:
         return await c.send('I am at a lower level on the hierarchy than the muted role.')
 
-    if not msg.mentions:
-        return await c.send('Please mention a valid member.')
-
-    mem = msg.mentions[0]
     try:
         await checks.roles(m, mem, g, c)
     except:

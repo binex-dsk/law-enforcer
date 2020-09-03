@@ -20,9 +20,10 @@ def hasval(dictt, val):
         return False
 
 client.start_time = None
-
+start = time.time()
 @client.event
 async def on_ready():
+    print(time.time() - start)
     # used for uptime
     client.start_time = datetime.now()
 

@@ -27,3 +27,11 @@ async def roles(auth, mem, g, c):
     else:
         return True
     raise Exception()
+
+def cid(id, get):
+    """Executes a function based on an ID."""
+    return get(to_id(id))
+
+def to_id(id):
+    """Converts a mention or ID into a proper int."""
+    return int(id.strip('<@&#!>')) if id.isdigit() else id.strip('<@&#!>')

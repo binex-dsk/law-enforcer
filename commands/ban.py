@@ -1,6 +1,16 @@
-from constants import checks, db
+from constants import checks, db, auth
 from tables import server_config
 from discord.utils import escape_mentions
+import discord, requests
+from init import client
+
+def safe_get(id):
+    get = requests.get(f'https://discord.com/api/v8/users/{id}', headers={'Authorization': f'Bot {auth.token}'})
+    if get.status_code == 200:
+        user = discord.User(state=client._connection, data=get.json())
+        return user
+    return False
+    
 
 name = 'ban'
 names = ['ban', 'snipe']
@@ -8,14 +18,13 @@ desc = 'Ban a user from the server.'
 examples = ['id1 dumb stupid', '728694582086205550 leaving won\'t save you']
 notes = 'The user is DMed upon being banned.'
 reqperms = ['ban members']
-reqargs = ['client', 'args', 'msg', 'g', 'c', 'm', 'conf']
+reqargs = ['g', 'c', 'm', 'conf']
 cargs = [
     {
         'name': 'user mention/id',
-        'aname': 'id',
+        'aname': 'user',
         'optional': False,
-        'excarg': 'client',
-        'check': lambda a, c: (a.isdigit() or escape_mentions(a) != a) and int(a.strip('<@&#!>')),
+        'check': lambda a: checks.cid(a, safe_get),
         'errmsg': 'Please provide a valid user mention or ID to ban.'
     },
     {
@@ -29,11 +38,7 @@ async def run(**env):
     for _, a in enumerate(env):
         globals().update({a: env.get(a)})
 
-    mem = g.get_member(id)
-    try:
-        user = await client.fetch_user(id)
-    except:
-        return await c.send(cargs[0]['errmsg'])
+    mem = g.get_member(user.id)
     if mem:
         try:
             await checks.roles(m, mem, g, c)
@@ -43,7 +48,7 @@ async def run(**env):
     try:
         if conf.ban_dm:
             try:
-                await mem.send(conf.ban_dm_message.format(MEM=user, GUILD=g, MOD=m, REASON=reason))
+                await user.send(conf.ban_dm_message.format(MEM=user, GUILD=g, MOD=m, REASON=reason))
             # if it doesn't work, ignore it and move on
             except:
                 pass

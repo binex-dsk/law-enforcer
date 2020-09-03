@@ -10,8 +10,8 @@ reqargs = ['args', 'client', 'g', 'c', 'm']
 cargs = [
     {
         'name': 'tag name',
-        'aname': 'result',
         'optional': False,
+        'noarg': True,
         'excarg': 'g',
         'check': lambda a, g: db.fetch(tags, {'guild': g.id, 'name': a}),
         'errmsg': 'That tag does not exist in this server.'

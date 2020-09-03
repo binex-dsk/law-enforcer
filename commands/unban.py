@@ -1,7 +1,16 @@
 import random
 from constants import db
-from constants.auth import ids
+from constants.auth import ids, token
 from tables import server_config
+import requests, discord
+from init import client
+
+def safe_bancheck(g, id):
+    get = requests.get(f'https://discord.com/api/v8/guilds/{g}/bans/{id}', headers={'Authorization': f'Bot {token}'})
+    if get.status_code == 200:
+        user = discord.User(state=client._connection, data=get.json()['user'])
+        return user
+    return False
 
 name = 'unban'
 names = ['unban', 'unsnipe']
@@ -12,12 +21,12 @@ reqperms = ['ban members']
 reqargs = ['args', 'client', 'g', 'c', 'm', 'conf']
 cargs = [
     {
-        'name': 'user mention/id',
-        'aname': 'id',
+        'name': 'user id',
+        'aname': 'user',
         'optional': False,
-        'excarg': 'client',
-        'check': lambda a, c: a.isdigit() and int(a),
-        'errmsg': 'Please provide a valid user ID to unban.'
+        'excarg': 'g',
+        'check': lambda a, g: a.isdigit() and safe_bancheck(g, int(a)),
+        'errmsg': 'Please provide a valid banned user ID to unban.'
     },
     {
         'name': 'reason',
@@ -30,24 +39,12 @@ async def run(**env):
     for _, a in enumerate(env):
         globals().update({a: env.get(a)})
 
-    ban = None
-
     try:
-        # fetch the ban for that user
-        user = await client.fetch_user(id)
-        ban = await g.fetch_ban(user)
-    except Exception as e:
-        # fetch_ban throws an exception if the user isn't banned
-        # so catch it here to notify the user
-        await c.send('This user is not banned.')
-        return print(f'{e}')
-
-    try:
-        await g.unban(ban.user, reason=reason)
-        await c.send(f'Successfully unbanned {ban.user}.\nReason: {reason}')
+        await g.unban(user, reason=reason)
+        await c.send(f'Successfully unbanned {user}.\nReason: {reason}')
         if conf.unban_dm:
             try:
-                await ban.user.send(conf.unban_dm_message.format(MEM=ban.user, GUILD=g, MOD=m, REASON=reason))
+                await user.send(conf.unban_dm_message.format(MEM=user, GUILD=g, MOD=m, REASON=reason))
             except:
                 pass
     except Exception as e:

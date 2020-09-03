@@ -1,4 +1,4 @@
-import constants.db as db
+from constants import db
 from tables import tags
 
 name = 'tag'

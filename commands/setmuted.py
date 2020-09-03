@@ -1,5 +1,5 @@
 import discord
-from constants import db
+from constants import db, checks
 from tables import muted_roles as roles
 
 name = 'setmuted'
@@ -15,7 +15,7 @@ cargs = [
         'aname': 'role',
         'optional': False,
         'excarg': 'g',
-        'check': lambda a, g: a.isdigit() and g.get_role(int(a)),
+        'check': lambda a, g: checks.cid(a, g.get_role),
         'errmsg': 'Please provide a valid role ID in this server.'
     }
 ]

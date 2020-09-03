@@ -7,7 +7,7 @@ desc = 'Clear a certain amount of messages.'
 examples = ['40']
 notes = 'The limit for this is very high (10000), but higher values (>2000) will be slower.'
 reqperms = ['manage messages', 'read message history']
-reqargs = ['args', 'g', 'c', 'conf']
+reqargs = ['c', 'conf']
 cargs = [
     {
         'name': 'amount',

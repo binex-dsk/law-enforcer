@@ -1,5 +1,5 @@
 import discord
-import constants.db as db
+from constants import db
 from tables import tags
 
 name = 'tags'
@@ -24,7 +24,6 @@ async def run(**env):
 
     # basically gets all the tags and formats them to fit on an embed
     for row in result:
-        print(row)
         if len(tags_str) > 1000:
             if fieldnum == 0:
                 emb.add_field(name='Tags', value=tags_str, inline=False)

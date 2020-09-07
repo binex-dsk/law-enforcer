@@ -1,4 +1,3 @@
-import discord
 from constants import db, checks
 from tables import muted_roles as roles
 
@@ -28,7 +27,7 @@ async def run(**env):
 
     if fetched:
         row = fetched.fetchone()
-        if row.id == id:
+        if row.id == role.id:
             return await c.send('This role is already the muted role.')
 
         try:

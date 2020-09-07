@@ -1,7 +1,7 @@
 from types import ModuleType
-from commands import __dict__ as commands
 import random, discord
 
+from commands import __dict__ as commands
 from groups import __dict__ as groups
 from constants.auth import ids, prefix
 
@@ -32,7 +32,7 @@ async def run(**env):
 
         helpEmb.description = 'This is a list of all groups and their commands.'
 
-        [helpEmb.add_field(name=group.name, value=f'{group.description}\n`{"`, `".join(group.commands)}`', inline=False) for group in [x for x in groups.values()if isinstance(x, ModuleType)]]
+        [helpEmb.add_field(name=group.name, value=f'{group.description}\n`{"`, `".join(group.commands)}`', inline=False) for group in [x for x in groups.values() if isinstance(x, ModuleType)]]
 
         helpEmb.set_footer(text='Law Enforcer v1.4.0', icon_url=client.user.avatar_url)
 

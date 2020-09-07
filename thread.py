@@ -29,6 +29,7 @@ class Thread():
 
 async def search():
     """Searches through muted members and unmutes them if their mute time is up."""
+    # this uses raw requests to prevent aiohttp from yelling at me
     mems = conn.execute(muted_members.select().where(muted_members.c.unmute_after <= int(time.time()))).fetchall()
 
     for m in mems:

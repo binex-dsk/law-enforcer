@@ -1,6 +1,4 @@
-from constants import checks, db
-from tables import server_config
-from discord.utils import escape_mentions
+from constants import checks
 
 name = 'kick'
 names = ['kick', 'softban']

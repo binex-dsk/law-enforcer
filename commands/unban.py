@@ -1,7 +1,5 @@
 import random
-from constants import db
 from constants.auth import ids, token
-from tables import server_config
 import requests, discord
 from init import client
 

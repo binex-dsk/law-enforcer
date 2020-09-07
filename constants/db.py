@@ -24,16 +24,10 @@ def insert(table, values):
         table (sqlalchemy.Table): The table to insert into.
 
         values (dict): The values to insert into the table.
-    Return value: None or sqlalchemy.ResultProxy object.
-
-    Throws an error if the table does not exist."""
-    #try:
+    Return value: None or sqlalchemy.ResultProxy object."""
     return conn.execute(table.insert(), [
         values
     ])
-    """except Exception as e:
-        print(e)
-        raise Exception('Table not found.')"""
 
 def delete(table, values):
     """Deletes a value from a table.
@@ -62,7 +56,7 @@ def fetch(table, values):
 
         values (dict): The values to search for.
     Return value: None or sqlalchemy.ResultProxy object."""
-    
+
     if not exists(table, values):
         return None
     selection = table.select()

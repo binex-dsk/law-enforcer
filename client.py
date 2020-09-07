@@ -1,16 +1,15 @@
-from commands import __dict__ as cmds
 from types import ModuleType
-from init import client
-
 import calendar, time
 from datetime import datetime, timedelta
 
+from commands import __dict__ as cmds
+from init import client
 from thread import Thread
-import discord
-
 from constants.auth import token, prefix, game
 from constants import db, checks
 from tables import muted_roles, muted_members, server_config, tags, conn
+
+import discord
 
 def hasval(dictt, val):
     try:
@@ -23,7 +22,7 @@ client.start_time = None
 start = time.time()
 @client.event
 async def on_ready():
-    print(time.time() - start)
+    print(f"Ready in {time.time() - start} seconds.")
     # used for uptime
     client.start_time = datetime.now()
 
@@ -46,8 +45,10 @@ async def on_message(msg):
     c = msg.channel
     g = msg.guild
     m = msg.author
-
-    conf = db.fetch(server_config, {'guild': g.id}).fetchone()
+    try:
+        conf = db.fetch(server_config, {'guild': g.id}).fetchone()
+    except AttributeError:
+        db.insert(server_config, {'guild': g.id})
     # extremely inefficient system but idgaf
     if not 'tag' in cmd:
         if (tagss := db.fetch(tags, {'guild': msg.guild.id})):
@@ -99,7 +100,6 @@ async def on_message(msg):
             checked = None
             if not hasval(arg, 'novar'):
                 varname = arg['name'] if not hasval(arg, 'aname') else arg['aname']
-            print(arg)
             if hasval(arg, 'check'):
                 if len(args) >= x + 1:
                     if hasval(arg, 'excarg'):
@@ -109,7 +109,6 @@ async def on_message(msg):
                     if not checked:
                         return await c.send(arg['errmsg'])
             if varname:
-                print(varname, checked)
                 if checked:
                     toupd = {varname: checked}
                 else:
@@ -117,9 +116,8 @@ async def on_message(msg):
                         toupd = {varname: ' '.join(args[x:]) or arg['default']}
                     else:
                         toupd = {varname: args[x] if len(args) >= x + 1 else arg['default']}
-                print(toupd)
                 env.update(toupd)
-                
+
     try:
         await command.run(**env)
     except Exception as e:

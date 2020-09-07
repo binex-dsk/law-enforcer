@@ -292,7 +292,7 @@ async def final(emb, conf_emb, opt, to_upd,):
     setbase(conf_emb, 'Final Settings', 'Thank you for using the interactive configuration!\nI am applying your settings. Meanwhile, please `~~contact` my master for bugs, issues, suggestions, etc. on this, as he is unfortunately not able to fully test this. Thank you!')
     conf_emb.set_footer(text='Thanks for using this!')
     await emb.edit(embed=conf_emb)
-    
+
     try:
         db.update(server_config, {'guild': opt.guild}, to_upd)
     except:

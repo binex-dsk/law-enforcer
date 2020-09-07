@@ -1,6 +1,3 @@
-from constants import db
-from tables import server_config
-
 name = 'clear'
 names = ['clear', 'purge']
 desc = 'Clear a certain amount of messages.'

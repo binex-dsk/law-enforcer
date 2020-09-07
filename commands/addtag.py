@@ -1,6 +1,6 @@
 from datetime import datetime
 from constants import checks, db
-from tables import tags, server_config
+from tables import tags
 
 name = 'addtag'
 names = ['addtag']

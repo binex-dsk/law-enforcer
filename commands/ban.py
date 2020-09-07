@@ -1,6 +1,4 @@
-from constants import checks, db, auth
-from tables import server_config
-from discord.utils import escape_mentions
+from constants import checks, auth
 import discord, requests
 from init import client
 
@@ -10,7 +8,6 @@ def safe_get(id):
         user = discord.User(state=client._connection, data=get.json())
         return user
     return False
-    
 
 name = 'ban'
 names = ['ban', 'snipe']

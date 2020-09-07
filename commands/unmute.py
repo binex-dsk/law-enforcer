@@ -1,7 +1,5 @@
-import discord
 from constants import checks, db
-from tables import muted_roles as roles, muted_members as mems, server_config
-from discord.utils import escape_mentions
+from tables import muted_roles as roles, muted_members as mems
 
 name = 'unmute'
 names = ['unmute']

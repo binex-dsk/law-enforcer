@@ -1,7 +1,6 @@
-import datetime, calendar, discord
+import datetime, calendar
 from constants import checks, db
-from tables import muted_roles as roles, muted_members as mems, server_config
-from discord.utils import escape_mentions
+from tables import muted_roles as roles, muted_members as mems
 
 def isfloat(stra):
     try:

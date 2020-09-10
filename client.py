@@ -1,12 +1,11 @@
+import time, calendar
 from types import ModuleType
-import calendar, time
 from datetime import datetime, timedelta
 
 from commands import __dict__ as cmds
 from init import client
 from thread import Thread
-from constants.auth import token, prefix, game
-from constants import db, checks
+from constants import db, checks, auth
 from tables import muted_roles, muted_members, server_config, tags, conn
 
 import discord
@@ -26,7 +25,7 @@ async def on_ready():
     # used for uptime
     client.start_time = datetime.now()
 
-    await client.change_presence(status=discord.Status.online, activity=discord.Game(game))
+    await client.change_presence(status=discord.Status.online, activity=discord.Game(auth.game))
     print('Successfully logged in.')
     Thread.start(block=False)
 
@@ -36,7 +35,7 @@ async def on_message(msg):
     if msg.author.bot:
         return
     # the actual arguments
-    args = msg.content[len(prefix):].strip().split(' ')
+    args = msg.content[len(auth.prefix):].strip().split(' ')
 
     # get the command
     cmd = args.pop(0).lower()
@@ -62,7 +61,7 @@ async def on_message(msg):
                     return await msg.channel.send(found[0])
 
     # ignore messages not starting with our prefix
-    if not msg.content.startswith(prefix):
+    if not msg.content.startswith(auth.prefix):
         return
 
     if cmd in conf.disabled_cmds.split():
@@ -146,10 +145,18 @@ async def on_guild_join(g):
         db.insert(server_config, {'guild': g.id})
     except:
         pass
+
+@client.event
+async def on_channel_create(c):
+    if c.type == discord.ChannelType.category or not c.category:
+        roles = db.fetch(muted_roles, {'guild': g.id})
+        if roles:
+            role = c.guild.get_role(roles.fetchone())
+            await c.edit(overwrites={role: discord.PermissionOverwrite(send_messages=False, add_reactions=False)})
 if __name__ == '__main__':
     # tries to login with the token
     try:
-        client.run(token)
+        client.run(auth.token)
     # if it fails, print the error
     except discord.errors.LoginFailure as err:
-        print(f'Failed to login. Token: {token}\n{err}')
+        print(f'Failed to login. Token: {auth.token}\n{err}')

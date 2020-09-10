@@ -32,6 +32,8 @@ async def run(**env):
 
         try:
             db.update(roles, {'guild': g.id}, {'id': args[0]})
+            for x in g.categories:
+                await x.edit(overwrites={role: discord.PermissionOverwrite(send_messages=False, add_reactions=False)})
             return await c.send(f'Successfully set muted role to {role.mention}.')
         except Exception as e:
             print(e)

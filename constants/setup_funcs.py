@@ -215,7 +215,7 @@ async def overwrites(g, c, m, client):
         ms = await client.wait_for('message',
         check=lambda s: s.author.id == m.id)
 
-        allow = list(filter(lambda x: x in allowed_perms, ms.content.split()))
+        allow = [x for x in ms.content.split() if x in allowed_perms]
 
         if len(allow) < 1:
             await c.send('No valid permissions were provided.\n'\
@@ -228,7 +228,7 @@ async def overwrites(g, c, m, client):
         ms = await client.wait_for('message',
         check=lambda s: s.author.id == m.id)
 
-        deny = list(filter(lambda x: x in allowed_perms, ms.content.split()))
+        deny = [x for x in ms.content.split() if x in allowed_perms]
 
         if len(deny) < 1:
             await c.send('No valid permissions were provided.\n'\

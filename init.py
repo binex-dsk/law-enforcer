@@ -1,2 +1,2 @@
-import discord
-client = discord.Client()
+from discord import Client
+client = Client()
